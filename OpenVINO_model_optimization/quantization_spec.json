@@ -1,0 +1,32 @@
+{
+    /* Model parameters */
+
+    "model": {
+        "model_name": "blazeface_fp32_int8", // Model name
+        "model": "blazeface_fp32.xml", // Path to model (.xml format)
+        "weights": "blazeface_fp32.bin" // Path to weights (.bin format)
+    },
+
+    /* Parameters of the engine used for model inference */
+    "engine": {
+        /* Simplified mode */
+        "type": "simplified",
+        "data_source": "../data"
+    },
+
+    /* Optimization hyperparameters */
+    "compression": {
+        "target_device": "CPU",
+        "algorithms": [
+            {
+                "name": "DefaultQuantization",
+                "params": {
+                    "preset": "performance",
+                    "stat_subset_size": 300,
+                    "shuffle_data": false
+                }
+            }
+        ]
+    }
+}
+

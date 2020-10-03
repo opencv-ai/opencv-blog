@@ -4,6 +4,8 @@ The blog post is here: https://opencv.org/how-to-speed-up-deep-learning-inferenc
 ## Requirements
 - Install Python 3.6 or 3.7 and run: ```python3 -m pip install -r requirements.txt```
 - Install OpenVINO tookit version 2020.1 or later using the official [instruction](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/choose-download.html)
+- [FaceMesh](https://github.com/thepowerfuldeez/facemesh.pytorch)
+- [BlazeFace](https://github.com/hollance/BlazeFace-PyTorch)
 
 ## Convert the PyTorch model to ONNX format
 ```python

@@ -2,16 +2,16 @@ import cv2
 import numpy as np
 from openvino.inference_engine import IECore
 from openvino.inference_engine import IENetwork
-from blazeface_np import BlazeFace
+from blazeface_numpy import BlazeFace
 
 
 def get_crop_face(detections, image):
     w, h = image.shape[0], image.shape[1]
 
-    ymin = int(detections[0, 0] * w)
-    xmin = int(detections[0, 1] * h)
-    ymax = int(detections[0, 2] * w)
-    xmax = int(detections[0, 3] * h)
+    ymin = int(detections[0] * w)
+    xmin = int(detections[1] * h)
+    ymax = int(detections[2] * w)
+    xmax = int(detections[3] * h)
 
     margin_x = int(0.25 * (xmax - xmin))
     margin_y = int(0.25 * (ymax - ymin))
@@ -81,7 +81,13 @@ while True:
     boxes = output[blaze_outputs[0]]
     confidences = output[blaze_outputs[1]]
     detections = blazenet._tensors_to_detections(boxes, confidences, blazenet.anchors)
-    detections = np.squeeze(detections, axis=0)
+    filtered_detections = []
+    for i in range(len(detections)):
+        faces = blazenet._weighted_non_max_suppression(detections[i])
+        faces = np.stack(faces) if len(faces) > 0 else np.zeros((0, 17))
+        filtered_detections.append(faces)
+    # for demo we expect only one face
+    detections = np.squeeze(filtered_detections, axis=0)
     # take boxes
     xmin, ymin, face_img = get_crop_face(detections, image)
 

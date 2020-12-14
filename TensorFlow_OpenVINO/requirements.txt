@@ -1,0 +1,7 @@
+numpy
+tqdm
+tensorflow-cpu==1.15
+argparse
+scipy
+imageio
+moviepy

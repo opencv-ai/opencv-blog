@@ -4,13 +4,9 @@ import cv2
 import numpy as np
 import skvideo.io
 from emotion_recognition_retail import InferenceModel, process_frame
-from loguru import logger
-from modelplace_api.visualization import (BACKGROUND_COLOR, WHITE_TEXT_COLOR,
-                                          add_info,
-                                          draw_emotion_recognition_one_frame)
-
+from modelplace_api.visualization import draw_emotion_recognition_one_frame
 from args_parser import parse_args
-from utils import EllipseGraph, EllipseGraphsCollector, overlay_image_alpha
+from utils import EllipseGraphsCollector, overlay_image_alpha, place_class_names_and_percents
 
 X_OFFSET = 5
 Y_OFFSET = 20
@@ -30,6 +26,8 @@ def main(args):
     graphs_collector = EllipseGraphsCollector()
     proceed = True
     visualization_results = []
+    overlay = cv2.imread("overlay_450x450.png", cv2.IMREAD_UNCHANGED)
+
     while proceed:
         image = np.ascontiguousarray(
             model.get_frame_from_camera()
@@ -42,14 +40,17 @@ def main(args):
             graphs_collector.update_graph(class_name)
         image = cv2.resize(image, (450, 450))
         vis_result = draw_emotion_recognition_one_frame(image, ret)
+
         start_x, start_y = np.clip(vis_result.shape[0] - graphs_collector.graphs_size, 0, vis_result.shape[0]) , \
                                np.clip(vis_result.shape[1] - graphs_collector.graphs_size - Y_OFFSET, 0, vis_result.shape[0])
+        alpha_mask_overlay = overlay[:, :, 3] / 255.0
+        overlay_background = overlay[..., :3]
+        overlay_image_alpha(vis_result, overlay_background, 0, 0, alpha_mask_overlay)
         for emotion, ellipse_graph in graphs_collector.graphs.items():
             percent = graphs_collector.get_current_emotion_percent(emotion)
-            vis_result = add_info(
-                vis_result,[start_x, int(vis_result.shape[1] - Y_OFFSET / 2)],
-                BACKGROUND_COLOR, f'{emotion} - {percent}%', WHITE_TEXT_COLOR,
-            )
+            text = f'{emotion.upper()} - {percent}%'
+            vis_result = place_class_names_and_percents(vis_result,[start_x, int(vis_result.shape[1] - Y_OFFSET / 2)],
+                                                        text)
             alpha_mask = ellipse_graph.alpha_mask
             overlay_image_alpha(vis_result, ellipse_graph.graph, start_x , start_y, alpha_mask)
             start_x = np.clip(start_x - graphs_collector.graphs_size - X_OFFSET, 0, vis_result.shape[0])

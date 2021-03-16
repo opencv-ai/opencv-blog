@@ -1,9 +1,12 @@
-This contains the code for \***\*. For more information - visit [\*\***]()
+This contains the code for **Emotion Recognition using OpenCV AI KIT and Modelplace**. For more information - visit [OpenCV.AI](https://www.opencv.ai/).
 
 ## Installation:
 
-1. Clone [repository](https://github.com/opencv-ai/oak-model-samples) with oak samples
-2. Set up model package:
+1. Clone [repository](https://github.com/opencv-ai/oak-model-samples) with OAK model samples by the following comand:
+
+    ```git clone https://github.com/opencv-ai/oak-model-samples.git```
+
+2. Set up Emotion Recognition package by following commands:
 
    2.1 `cd emotion_recognition_retail`
 
@@ -36,7 +39,13 @@ To see results visualization run the script with the following arguments:
 python3 main.py -model <path_to_emotion_recognition_retail> -vis
 ```
 
-You can also use `python3 main.py -model <path_to_emotion_recognition_retail> -vis -out_vid` for create video with visualization results.
-It will be stored in `inference_results.mp4`.
+You can also use:
 
-`python3 main.py -model <path_to_emotion_recognition_retail> -vis -out_stat` will create `emotion_statistic.png` with emotion pie chart.
+`python3 main.py -model <path_to_emotion_recognition_retail> -vis -out_vid` 
+
+for create video with visualization results. It will be stored in `inference_results.mp4`.
+
+
+`emotion_statistic.png` with emotion pie chart will be created by the following command:
+
+`python3 main.py -model <path_to_emotion_recognition_retail> -vis -out_stat` 

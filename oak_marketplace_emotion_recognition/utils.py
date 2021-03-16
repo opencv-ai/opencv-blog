@@ -1,10 +1,26 @@
 import json
 import os
-
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
+from modelplace_api.visualization import (WHITE_TEXT_COLOR,MONTSERATT_BOLD_TTF_PATH,
+                                          NORM_HEIGHT,INFO_TEXT_SIZE,
+                                          TEXT_OFFSET_Y, TEXT_OFFSET_X)
+
+
+def place_class_names_and_percents(image, coords, text):
+    img_h, img_w, _ = image.shape
+    scale = min([img_w, img_h]) / NORM_HEIGHT
+    text_size = int(scale * INFO_TEXT_SIZE)
+    text_offset_y = int(scale * TEXT_OFFSET_Y)
+    text_offset_x = int(scale * TEXT_OFFSET_X)
+    coords = coords[0] - int(2 * scale) + text_offset_x, coords[1] + int(2 * scale) - text_offset_y
+    pil_img = Image.fromarray(image)
+    draw = ImageDraw.Draw(pil_img)
+    montserrat = ImageFont.truetype(MONTSERATT_BOLD_TTF_PATH, text_size)
+    draw.text(coords, text, font=montserrat, fill=WHITE_TEXT_COLOR)
+    return np.array(pil_img)
 
 
 def overlay_image_alpha(img, img_overlay, x, y, alpha_mask=None):

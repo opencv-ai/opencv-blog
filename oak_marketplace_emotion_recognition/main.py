@@ -10,7 +10,6 @@ from modelplace_api.visualization import (BACKGROUND_COLOR, WHITE_TEXT_COLOR,
                                           draw_emotion_recognition_one_frame)
 
 from args_parser import parse_args
-from emotion_logger import EmotionLogger
 from utils import EllipseGraph, EllipseGraphsCollector, overlay_image_alpha
 
 X_OFFSET = 5
@@ -27,7 +26,6 @@ def build_model(model_path):
 def main(args):
     model_path = os.path.join(args.root_model_path, "checkpoint")
     model = build_model(model_path)
-    emotion_logger = EmotionLogger()
     input_width, input_height = model.get_input_shapes()
     graphs_collector = EllipseGraphsCollector()
     proceed = True
@@ -42,7 +40,6 @@ def main(args):
         if ret:
             class_name = ret[0].emotions[0].class_name
             graphs_collector.update_graph(class_name)
-            logger.info(emotion_logger(emotion=class_name))
         image = cv2.resize(image, (450, 450))
         vis_result = draw_emotion_recognition_one_frame(image, ret)
         start_x, start_y = np.clip(vis_result.shape[0] - graphs_collector.graphs_size, 0, vis_result.shape[0]) , \

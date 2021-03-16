@@ -53,7 +53,6 @@ def main(args):
                 vis_result,[start_x, int(vis_result.shape[1] - Y_OFFSET / 2)],
                 BACKGROUND_COLOR, f'{emotion} - {percent}%', WHITE_TEXT_COLOR,
             )
-            vis_result = cv2.circle(vis_result, (start_x, start_y), radius=0, color=(0, 0, 255), thickness=-1)
             alpha_mask = ellipse_graph.alpha_mask
             overlay_image_alpha(vis_result, ellipse_graph.graph, start_x , start_y, alpha_mask)
             start_x = np.clip(start_x - graphs_collector.graphs_size - X_OFFSET, 0, vis_result.shape[0])

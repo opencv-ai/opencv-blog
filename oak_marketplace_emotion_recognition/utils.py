@@ -4,9 +4,13 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
+import operator
 from modelplace_api.visualization import (WHITE_TEXT_COLOR,MONTSERATT_BOLD_TTF_PATH,
                                           NORM_HEIGHT,INFO_TEXT_SIZE,
-                                          TEXT_OFFSET_Y, TEXT_OFFSET_X)
+                                          TEXT_OFFSET_Y, TEXT_OFFSET_X, add_info, BACKGROUND_COLOR)
+
+X_OFFSET = 5
+Y_OFFSET = 15
 
 
 def place_class_names_and_percents(image, coords, text):
@@ -40,14 +44,14 @@ def overlay_image_alpha(img, img_overlay, x, y, alpha_mask=None):
     img_crop[:] = alpha * img_overlay_crop + alpha_inv * img_crop
 
 
-class EllipseGraphsCollector:
-    def __init__(self, statistic_path:str = "statistic.json", emotion_size: tuple = (25,25), size: int = 85):
+class EmotionGraphsCollector:
+    def __init__(self, statistic_path:str = "result_statistic.json", emotion_size: tuple = (25,25), size: int = 85):
         self.graphs = {
-            "happy": EllipseGraph(emotion='happy', size=size, emotion_size=emotion_size),
-            "sad": EllipseGraph(emotion='sad',size=size, emotion_size=emotion_size),
-            "anger": EllipseGraph(emotion='anger',size=size, emotion_size=emotion_size),
-            "surprise": EllipseGraph(emotion='surprise',size=size, emotion_size=emotion_size),
-            "neutral": EllipseGraph(emotion='neutral',size=size, emotion_size=emotion_size),
+            "happy": EmotionGraph(emotion='happy', size=size, emotion_size=emotion_size),
+            "sad": EmotionGraph(emotion='sad',size=size, emotion_size=emotion_size),
+            "anger": EmotionGraph(emotion='anger',size=size, emotion_size=emotion_size),
+            "surprise": EmotionGraph(emotion='surprise',size=size, emotion_size=emotion_size),
+            "neutral": EmotionGraph(emotion='neutral',size=size, emotion_size=emotion_size),
         }
         self.output_statistic_path = statistic_path
         self.graphs_size = size
@@ -91,9 +95,44 @@ class EllipseGraphsCollector:
             plt.savefig('emotion_statistic.png')
         plt.show()
 
+    def get_current_top_graph_parameters(self):
+        top_emotion, _ = sorted({x: y.emotion_amount for x, y in self.graphs.items()}.items(), key=operator.itemgetter(1))[-1]
+        return self.graphs[top_emotion].progress, top_emotion
+
+    def create_result_emotion_graphs(self, size, is_save: bool = False):
+        result_statistic = np.zeros((size, size, 3), dtype=np.uint8)
+        result_statistic = add_info(result_statistic, [0, int(0.1 * size)], BACKGROUND_COLOR, 'STATISTICS', WHITE_TEXT_COLOR)
+        top_graph_progress, top_emotion = self.get_current_top_graph_parameters()
+        top_graph_size = int(size / 4)
+        top_graph_emotion_size = (int(top_graph_size / 3), int(top_graph_size / 3))
+        top_graph = EmotionGraph(size=top_graph_size, emotion=top_emotion, emotion_size=top_graph_emotion_size)
+        top_graph.update_graph(top_graph_progress)
+        top_graph_x = int(size / 2 - top_graph.width / 2)
+        top_graph_y = int(size / 2 - top_graph.height / 2)
+        text = f'MOSTLY {top_graph.emotion.upper()} - {self.get_current_emotion_percent(top_graph.emotion)}%'
+        result_statistic = place_class_names_and_percents(result_statistic,
+                                                          [top_graph_x,
+                                                           int(top_graph_y - 2 * Y_OFFSET / 2)],
+                                                           text)
+        overlay_image_alpha(result_statistic, top_graph.graph, top_graph_x, top_graph_y, top_graph.alpha_mask)
+        start_x, start_y = np.clip(result_statistic.shape[0] - 2 * self.graphs_size, 0, result_statistic.shape[0]) , \
+                               np.clip(result_statistic.shape[1] - self.graphs_size - Y_OFFSET, 0, result_statistic.shape[0])
+        for emotion, ellipse_graph in self.graphs.items():
+            if emotion == top_emotion:
+                continue
+            percent = self.get_current_emotion_percent(emotion)
+            text = f'{emotion.upper()} - {percent}%'
+            result_statistic = place_class_names_and_percents(result_statistic, [start_x, int(result_statistic.shape[1] - Y_OFFSET / 2)],
+                                                        text)
+            alpha_mask = ellipse_graph.alpha_mask
+            overlay_image_alpha(result_statistic, ellipse_graph.graph, start_x, start_y, alpha_mask)
+            start_x = np.clip(start_x - self.graphs_size - 15 * X_OFFSET, 0, result_statistic.shape[0])
+        if is_save:
+            cv2.imwrite('result_statistic.png', result_statistic)
+        return result_statistic
 
 
-class EllipseGraph:
+class EmotionGraph:
     def __init__(
         self, background_color: tuple = (28, 28, 30),
         progress_color: tuple = (145, 82, 225),
@@ -102,7 +141,7 @@ class EllipseGraph:
         start_angle: int = -220,
         end_angle: int = 40,
         emotion: str = 'happy',
-        emotion_size: tuple = (25, 25),
+        emotion_size: tuple = (25, 25)
     ):
         self.background_color = background_color
         self.progress_color = progress_color
@@ -165,6 +204,7 @@ class EllipseGraph:
         self.alpha_mask = np.ones((self.size, self.size, 3), dtype=np.uint8)
 
     def update_graph(self, progress: float = 0.0):
+        self.progress = progress
         diff = (self.end_angle - self.start_angle) * progress
         self.graph = cv2.ellipse(
             self.graph, center=self.center, axes=self.axes, angle=0, startAngle=self.start_angle,

@@ -11,7 +11,7 @@ def main():
     model_path = osp.join(args.model_path, "checkpoint")
     model = build_model(model_path)
     emotions_collector = EmotionBarAnalyzer()
-    visualization_results = process_cam(model, emotions_collector, show=bool(args.vis))
+    visualization_results = process_cam(model, emotions_collector, show=args.vis)
     if args.save_video:
         save_video(visualization_results)
     statistic_result = emotions_collector.create_result_emotion_bar(720, save=args.save_statistics)

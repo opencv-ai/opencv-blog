@@ -10,7 +10,7 @@ def build_model(model_path):
     return model
 
 
-def process_cam(model, emotion_collector, is_show: bool = True):
+def process_cam(model, emotion_collector, show: bool = True):
     visualization_results = []
     model.add_cam_to_pipeline()
     proceed = True
@@ -24,7 +24,7 @@ def process_cam(model, emotion_collector, is_show: bool = True):
         ret, proceed, _ = process_frame(image, model, visualization_func=None)
         vis_result = statistics_update(image, ret, emotion_collector)
         visualization_results.append(vis_result)
-        if is_show:
+        if show:
             cv2.imshow('result', vis_result)
             if cv2.waitKey(1) == ord("q"):
                 cv2.destroyAllWindows()

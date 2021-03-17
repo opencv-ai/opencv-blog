@@ -9,9 +9,7 @@ FFMPEG_OUTPUT_DICT = {
 
 
 def save_video(visualization_results):
-    writer = skvideo.io.FFmpegWriter(
-        os.path.join(os.path.abspath(os.curdir), "inference_results.mp4"),
-        outputdict=FFMPEG_OUTPUT_DICT,
+    writer = skvideo.io.FFmpegWriter("inference_results.mp4", outputdict=FFMPEG_OUTPUT_DICT,
     )
     for frame in visualization_results:
         writer.writeFrame(frame[:, :, ::-1])

@@ -29,7 +29,7 @@ usage: main.py [-h] [--model_path MODEL_PATH] [-vis {0,1}]
 
 optional arguments:
   -h, --help            show this help message and exit
-  --model_path MODEL_PATH
+  --model-path MODEL_PATH
                         Path to root model directory
   -vis {0,1}            If set to 1, visualize the results
   --save-video {0,1}    If set to 1, save the visualization results onto a MP4

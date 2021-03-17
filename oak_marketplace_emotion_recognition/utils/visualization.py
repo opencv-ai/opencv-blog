@@ -5,15 +5,44 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 import operator
+import os.path as osp
+import os
 from modelplace_api.visualization import (WHITE_TEXT_COLOR,MONTSERATT_BOLD_TTF_PATH,
                                           NORM_HEIGHT,INFO_TEXT_SIZE,
-                                          TEXT_OFFSET_Y, TEXT_OFFSET_X, add_info, BACKGROUND_COLOR)
+                                          TEXT_OFFSET_Y, TEXT_OFFSET_X, add_info, BACKGROUND_COLOR,
+                                          draw_emotion_recognition_one_frame)
 
 X_OFFSET = 5
 Y_OFFSET = 15
+OVERLAY_PATH = osp.join(os.path.abspath(os.curdir), "images", "overlay_450x450.png")
 
 
-def place_class_names_and_percents(image, coords, text):
+def statistics_update(image, ret, emotions_collector):
+    overlay = cv2.imread(OVERLAY_PATH, cv2.IMREAD_UNCHANGED)
+    if ret:
+        class_name = ret[0].emotions[0].class_name
+        emotions_collector.update_graphs(class_name)
+    image = cv2.resize(image, (450, 450))
+    vis_result = draw_emotion_recognition_one_frame(image, ret)
+
+    start_x, start_y = np.clip(vis_result.shape[0] - emotions_collector.graphs_size, 0, vis_result.shape[0]), \
+                       np.clip(vis_result.shape[1] - emotions_collector.graphs_size - Y_OFFSET, 0,
+                               vis_result.shape[0])
+    alpha_mask_overlay = overlay[:, :, 3] / 255.0
+    overlay_background = overlay[..., :3]
+    overlay_image_alpha(vis_result, overlay_background, 0, 0, alpha_mask_overlay)
+    for emotion, emotion_graph in emotions_collector.graphs.items():
+        percent = emotions_collector.get_current_emotion_percent(emotion)
+        text = f'{emotion.upper()} - {percent}%'
+        vis_result = add_class_names_and_percents(vis_result, [start_x, int(vis_result.shape[1] - Y_OFFSET / 2)],
+                                                  text)
+        alpha_mask = emotion_graph.alpha_mask
+        overlay_image_alpha(vis_result, emotion_graph.graph, start_x, start_y, alpha_mask)
+        start_x = np.clip(start_x - emotions_collector.graphs_size - X_OFFSET, 0, vis_result.shape[0])
+    return vis_result
+
+
+def add_class_names_and_percents(image, coords, text):
     img_h, img_w, _ = image.shape
     scale = min([img_w, img_h]) / NORM_HEIGHT
     text_size = int(scale * INFO_TEXT_SIZE)
@@ -28,6 +57,8 @@ def place_class_names_and_percents(image, coords, text):
 
 
 def overlay_image_alpha(img, img_overlay, x, y, alpha_mask=None):
+    # source_image = img.copy()
+    # source_image_overlay = img_overlay.copy()
     y1, y2 = max(0, y), min(img.shape[0], y + img_overlay.shape[0])
     x1, x2 = max(0, x), min(img.shape[1], x + img_overlay.shape[1])
 
@@ -63,8 +94,8 @@ class EmotionGraphsCollector:
     def get_emotions_amount(self):
         return sum([self.graphs[x].emotion_amount for x in self.graphs.keys()])
 
-    def update_graph(self, emotion):
-        self.graphs[emotion].update_emotion_amount()
+    def update_graphs(self, emotion):
+        self.graphs[emotion].emotion_amount = self.graphs[emotion].emotion_amount + 1
         # respectively update all others graphs
         for emotion in self.graphs.keys():
             progress = self.graphs[emotion].emotion_amount / self.get_emotions_amount()
@@ -76,11 +107,12 @@ class EmotionGraphsCollector:
             json.dump(statistic, outfile, indent=4, sort_keys=True)
 
     def get_current_emotion_percent(self, emotion):
-        if not self.get_emotions_amount():
+        if self.get_emotions_amount() != 0:
+            return int((self.graphs[emotion].emotion_amount / self.get_emotions_amount()) * 100)
+        else:
             return 0
-        return int((self.graphs[emotion].emotion_amount / self.get_emotions_amount()) * 100)
 
-    def plot_statistic_result(self,is_save: bool = False):
+    def create_statistiс_pie_chart(self,is_save: bool = False):
         statistic = {x: y.emotion_amount for x, y in self.graphs.items()}
         emotions = list(statistic.keys())
         emotions_amount = list(statistic.values())
@@ -93,7 +125,6 @@ class EmotionGraphsCollector:
         plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
         if is_save:
             plt.savefig('emotion_statistic.png')
-        plt.show()
 
     def get_current_top_graph_parameters(self):
         top_emotion, _ = sorted({x: y.emotion_amount for x, y in self.graphs.items()}.items(), key=operator.itemgetter(1))[-1]
@@ -110,7 +141,7 @@ class EmotionGraphsCollector:
         top_graph_x = int(size / 2 - top_graph.width / 2)
         top_graph_y = int(size / 2 - top_graph.height / 2)
         text = f'MOSTLY {top_graph.emotion.upper()} - {self.get_current_emotion_percent(top_graph.emotion)}%'
-        result_statistic = place_class_names_and_percents(result_statistic,
+        result_statistic = add_class_names_and_percents(result_statistic,
                                                           [top_graph_x,
                                                            int(top_graph_y - 2 * Y_OFFSET / 2)],
                                                            text)
@@ -122,7 +153,7 @@ class EmotionGraphsCollector:
                 continue
             percent = self.get_current_emotion_percent(emotion)
             text = f'{emotion.upper()} - {percent}%'
-            result_statistic = place_class_names_and_percents(result_statistic, [start_x, int(result_statistic.shape[1] - Y_OFFSET / 2)],
+            result_statistic = add_class_names_and_percents(result_statistic, [start_x, int(result_statistic.shape[1] - Y_OFFSET / 2)],
                                                         text)
             alpha_mask = ellipse_graph.alpha_mask
             overlay_image_alpha(result_statistic, ellipse_graph.graph, start_x, start_y, alpha_mask)
@@ -141,66 +172,47 @@ class EmotionGraph:
         start_angle: int = -220,
         end_angle: int = 40,
         emotion: str = 'happy',
-        emotion_size: tuple = (25, 25)
+        emotion_amount: int = 0,
+        progress: float = 0.0,
+        emotion_size: tuple = (25, 25),
+        emotions_path: str = 'images/emoji',
     ):
+        self.emotion_images = {
+            'neutral': np.array(
+                Image.open(os.path.join(os.path.abspath(os.curdir),
+                                        emotions_path , "neutral.png")).resize(emotion_size)),
+            'happy': np.array(
+                Image.open(os.path.join(os.path.abspath(os.curdir),
+                                        emotions_path , "happy.png")).resize(emotion_size),
+            ),
+            'sad': np.array(
+                Image.open(os.path.join(os.path.abspath(os.curdir),
+                                        emotions_path, "sad.png")).resize(emotion_size)),
+            'anger': np.array(
+                Image.open(os.path.join(os.path.abspath(os.curdir),
+                                        emotions_path, "anger.png")).resize(emotion_size),
+            ),
+            'surprise': np.array(
+                Image.open(os.path.join(os.path.abspath(os.curdir),
+                                        emotions_path, "surprise.png")).resize(emotion_size)),
+        }
+        if emotion not in self.emotion_images.keys():
+            raise Exception(f"emotion argument should be one of {self.emotion_images.keys()}!")
+        self.emotion = emotion
+        self.emotions_path = emotions_path
+        self._emotion_amount = emotion_amount
+        self._progress = progress
         self.background_color = background_color
         self.progress_color = progress_color
         self.size = size
         self.thickness = thickness
         self.start_angle = start_angle
         self.end_angle = end_angle
-        self.emotion_size = emotion_size
-        self.emotion_images = {
-            'neutral': np.array(
-                Image.open(
-                    os.path.join(
-                        os.path.dirname(__file__),
-                        "emotions-pack", "neutral.png",
-                    ),
-                ).resize(self.emotion_size),
-            ),
-            'happy': np.array(
-                Image.open(
-                    os.path.join(
-                        os.path.dirname(__file__),
-                        "emotions-pack", "happy.png",
-                    ),
-                ).resize(self.emotion_size),
-            ),
-            'sad': np.array(
-                Image.open(
-                    os.path.join(
-                        os.path.dirname(__file__),
-                        "emotions-pack", "sad.png",
-                    ),
-                ).resize(self.emotion_size),
-            ),
-            'anger': np.array(
-                Image.open(
-                    os.path.join(
-                        os.path.dirname(__file__),
-                        "emotions-pack", "anger.png",
-                    ),
-                ).resize(self.emotion_size),
-            ),
-            'surprise': np.array(
-                Image.open(
-                    os.path.join(
-                        os.path.dirname(__file__),
-                        "emotions-pack", "surprise.png",
-                    ),
-                ).resize(self.emotion_size),
-            ),
-        }
-        if emotion not in self.emotion_images.keys():
-            raise Exception(f"emotion argument should be one of {self.emotion_images.keys()}!")
-        self.emotion = emotion
         self.graph = np.zeros((self.size, self.size, 3), dtype=np.uint8)
         self.height, self.width = self.graph.shape[0:2]
         self.radius = self.size // 2
         self.center = (self.width // 2, self.width // 2)
         self.axes = (self.radius, self.radius)
-        self.emotion_amount = 0
         self.alpha_mask = np.ones((self.size, self.size, 3), dtype=np.uint8)
 
     def update_graph(self, progress: float = 0.0):
@@ -231,5 +243,18 @@ class EmotionGraph:
 
         return True
 
-    def update_emotion_amount(self):
-        self.emotion_amount += 1
+    @property
+    def emotion_amount(self):
+        return self._emotion_amount
+
+    @property
+    def progress(self):
+        return self._progress
+
+    @emotion_amount.setter
+    def emotion_amount(self, value):
+        self._emotion_amount = value
+
+    @progress.setter
+    def progress(self, value):
+        self._progress = value

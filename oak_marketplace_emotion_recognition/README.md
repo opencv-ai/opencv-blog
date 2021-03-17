@@ -9,43 +9,32 @@ This contains the code for **Emotion Recognition using OpenCV AI KIT and Modelpl
 2. Set up Emotion Recognition package by following commands:
 
    2.1 `cd emotion_recognition_retail`
+   
+   2.2 `export PATH_TO_EMOTION_RECOGNITION_MODEL=$(pwd)`
+   
+   2.3 `python3 setup.py bdist_wheel && rm -R build/ *.egg-info`
 
-   2.2 `python3 setup.py bdist_wheel && rm -R build/ *.egg-info`
-
-   2.3 `pip3 install dist/*.whl -f https://artifacts.luxonis.com/artifactory/luxonis-python-snapshot-local/depthai/ && rm -R dist/`
+   2.4 `pip3 install dist/*.whl -f https://artifacts.luxonis.com/artifactory/luxonis-python-snapshot-local/depthai/ && rm -R dist/`
 
 ## Usage
 
+To make the code working as described in a blog post, run it with the following command:
+
+`python main.py --model-path <PATH_TO_EMOTION_RECOGNITION_MODEL>`
+
+
 ```
-usage: main.py [-h] [-model ROOT_MODEL_PATH] [-vis] [--output-video]
-               [--output-statistic]
+usage: main.py [-h] [--model_path MODEL_PATH] [-vis {0,1}]
+               [--save-video {0,1}] [--save-statistics {0,1}]
 
 optional arguments:
   -h, --help            show this help message and exit
-  -model ROOT_MODEL_PATH, --root_model_path ROOT_MODEL_PATH
+  --model_path MODEL_PATH
                         Path to root model directory
-  -vis, --visualization
-                        Visualize the results from the network
-  --output-video, -out_vid
-                        Save by-frame visualization results of the inference
-                        into video
-  --output-statistic, -out_stat
-                        Save emotion statistic during video watching
+  -vis {0,1}            If set to 1, visualize the results
+  --save-video {0,1}    If set to 1, save the visualization results onto a MP4
+                        video file
+  --save-statistics {0,1}
+                        If set to 1, save the statistics onto a PNG image file
 ```
 
-To see results visualization run the script with the following arguments:
-
-```
-python3 main.py -model <path_to_emotion_recognition_retail> -vis
-```
-
-You can also use:
-
-`python3 main.py -model <path_to_emotion_recognition_retail> -vis -out_vid` 
-
-for create video with visualization results. It will be stored in `inference_results.mp4`.
-
-
-`emotion_statistic.png` with emotion pie chart will be created by the following command:
-
-`python3 main.py -model <path_to_emotion_recognition_retail> -vis -out_stat` 

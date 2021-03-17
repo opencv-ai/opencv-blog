@@ -4,27 +4,29 @@ from argparse import ArgumentParser
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument(
-        "-model",
-        "--root_model_path",
+        "--model-path",
         help="Path to root model directory",
         type=str,
     )
     parser.add_argument(
         "-vis",
-        "--visualization",
-        action="store_true",
-        help="Visualize the results from the network",
+        type=int,
+        choices=[0, 1],
+        help="If set to 1, visualize the results",
+        default=1,
     )
     parser.add_argument(
-        "--output-video",
-        "-out_vid",
-        help="Save by-frame visualization results of the inference into video",
-        action="store_true",
+        "--save-video",
+        type=int,
+        choices=[0, 1],
+        help="If set to 1, save the visualization results onto a MP4 video file",
+        default = 1,
     )
     parser.add_argument(
-        "--output-statistic",
-        "-out_stat",
-        help="Save emotion statistic during video watching",
-        action="store_true",
+        "--save-statistics",
+        type=int,
+        choices=[0, 1],
+        help="If set to 1, save the statistics onto a PNG image file",
+        default=1,
     )
     return parser.parse_args()

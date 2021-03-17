@@ -20,7 +20,6 @@ def statistics_update(image, ret, emotions_collector):
     if ret:
         class_name = ret[0].emotions[0].class_name
         emotions_collector.update_bars(class_name)
-    image = cv2.resize(image, (450, 450))
     vis_result = draw_emotion_recognition_one_frame(image, ret)
 
     start_x, start_y = np.clip(vis_result.shape[0] - emotions_collector.bars_size, 0, vis_result.shape[0]), \
@@ -74,7 +73,7 @@ def overlay_image_alpha(img, img_overlay, x, y, alpha_mask=None):
 class EmotionAnalyzer:
     def __init__(self, statistic_path: str = "result_statistic.json",
                  emotion_size: tuple = (25, 25),
-                 size: int = 85,
+                 size: int = 55,
                  result_bar_size: int = 720):
         self.bars = {
             "happy": EmotionBar(emotion='happy', size=size, emotion_size=emotion_size),

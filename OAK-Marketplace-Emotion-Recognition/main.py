@@ -17,7 +17,7 @@ def main():
     visualization_results = process_cam(model, emotion_analyzer, show=args.visualize)
     if args.save_video:
         save_video(visualization_results)
-    result_emotion_bar = emotion_analyzer.create_result_emotion_bar(720, save=args.save_statistics)
+    result_emotion_bar = emotion_analyzer.create_result_emotion_bar(save=args.save_statistics)
     result_emotion_pie_chart = emotion_analyzer.create_statistic_pie_chart(save=args.save_statistics)
     cv2.imshow('Result Statistic', result_emotion_bar)
     cv2.waitKey(0)

@@ -74,7 +74,8 @@ def overlay_image_alpha(img, img_overlay, x, y, alpha_mask=None):
 class EmotionAnalyzer:
     def __init__(self, statistic_path: str = "result_statistic.json",
                  emotion_size: tuple = (25, 25),
-                 size: int = 85, ):
+                 size: int = 85,
+                 result_bar_size: int = 720):
         self.bars = {
             "happy": EmotionBar(emotion='happy', size=size, emotion_size=emotion_size),
             "sad": EmotionBar(emotion='sad',size=size, emotion_size=emotion_size),
@@ -84,6 +85,7 @@ class EmotionAnalyzer:
         }
         self.output_statistic_path = statistic_path
         self.bars_size = size
+        self.result_bar_size = result_bar_size
         self.fill_bars()
 
     def fill_bars(self):
@@ -133,16 +135,16 @@ class EmotionAnalyzer:
         top_emotion, _ = sorted({x: y.emotion_amount for x, y in self.bars.items()}.items(), key=operator.itemgetter(1))[-1]
         return self.bars[top_emotion].progress, top_emotion
 
-    def create_result_emotion_bar(self, size, save: bool = False):
-        result_statistic = np.zeros((size, size, 3), dtype=np.uint8)
-        result_statistic = add_info(result_statistic, [0, int(0.1 * size)], BACKGROUND_COLOR, 'STATISTICS', WHITE_TEXT_COLOR)
+    def create_result_emotion_bar(self, save: bool = False):
+        result_statistic = np.zeros((self.result_bar_size, self.result_bar_size, 3), dtype=np.uint8)
+        result_statistic = add_info(result_statistic, [0, int(0.1 * self.result_bar_size)], BACKGROUND_COLOR, 'STATISTICS', WHITE_TEXT_COLOR)
         top_bar_progress, top_emotion = self.get_current_top_bar_parameters()
-        top_bar_size = int(size / 4)
+        top_bar_size = int(self.result_bar_size / 4)
         top_bar_emotion_size = (int(top_bar_size / 3), int(top_bar_size / 3))
         top_bar = EmotionBar(size=top_bar_size, emotion=top_emotion, emotion_size=top_bar_emotion_size)
         top_bar.update_bar(top_bar_progress)
-        top_bar_x = int(size / 2 - top_bar.width / 2)
-        top_bar_y = int(size / 2 - top_bar.height / 2)
+        top_bar_x = int(self.result_bar_size / 2 - top_bar.width / 2)
+        top_bar_y = int(self.result_bar_size / 2 - top_bar.height / 2)
         text = f'MOSTLY {top_bar.emotion.upper()} - {self.get_current_emotion_percent(top_bar.emotion)}%'
         result_statistic = add_class_names_and_percents(result_statistic,
                                                           [top_bar_x,

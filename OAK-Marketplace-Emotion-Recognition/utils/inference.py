@@ -1,7 +1,6 @@
 from emotion_recognition_retail import process_frame
 import cv2
 import numpy as np
-from visualization import statistics_update
 
 
 def process_cam(model, emotion_analyzer, show: bool = True):
@@ -16,7 +15,7 @@ def process_cam(model, emotion_analyzer, show: bool = True):
                 .transpose(1, 2, 0),
         )
         ret, proceed, _ = process_frame(image, model, visualization_func=None)
-        vis_result = statistics_update(image, ret, emotion_analyzer)
+        vis_result = emotion_analyzer.statistics_update(image, ret)
         visualization_results.append(vis_result)
         if show:
             cv2.imshow('result', vis_result)

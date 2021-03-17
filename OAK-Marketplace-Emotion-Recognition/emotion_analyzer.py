@@ -15,29 +15,6 @@ Y_OFFSET = 15
 OVERLAY_PATH = "images/overlay.png"
 
 
-def statistics_update(image, ret, emotions_collector):
-    overlay = cv2.imread(OVERLAY_PATH, cv2.IMREAD_UNCHANGED)
-    if ret:
-        class_name = ret[0].emotions[0].class_name
-        emotions_collector.update_bars(class_name)
-    vis_result = draw_emotion_recognition_one_frame(image, ret)
-
-    start_x, start_y = np.clip(vis_result.shape[0] - emotions_collector.bars_size, 0, vis_result.shape[0]), \
-                       np.clip(vis_result.shape[1] - emotions_collector.bars_size - Y_OFFSET, 0,
-                               vis_result.shape[0])
-    alpha_mask_overlay = overlay[:, :, 3] / 255.0
-    overlay_background = overlay[..., :3]
-    overlay_image_alpha(vis_result, overlay_background, 0, 0, alpha_mask_overlay)
-    for emotion, emotion_bar in emotions_collector.bars.items():
-        percent = emotions_collector.get_current_emotion_percent(emotion)
-        text = f'{emotion.upper()} - {percent}%'
-        vis_result = add_class_names_and_percents(vis_result, [start_x, int(vis_result.shape[1] - Y_OFFSET / 2)],
-                                                  text)
-        alpha_mask = emotion_bar.alpha_mask
-        overlay_image_alpha(vis_result, emotion_bar.bar, start_x, start_y, alpha_mask)
-        start_x = np.clip(start_x - emotions_collector.bars_size - X_OFFSET, 0, vis_result.shape[0])
-    return vis_result
-
 
 def add_class_names_and_percents(image, coords, text):
     img_h, img_w, _ = image.shape
@@ -134,6 +111,30 @@ class EmotionAnalyzer:
         top_emotion, _ = sorted({x: y.emotion_amount for x, y in self.bars.items()}.items(), key=operator.itemgetter(1))[-1]
         return self.bars[top_emotion].progress, top_emotion
 
+    def statistics_update(self, image, ret):
+        overlay = cv2.imread(OVERLAY_PATH, cv2.IMREAD_UNCHANGED)
+        if ret:
+            class_name = ret[0].emotions[0].class_name
+            self.update_bars(class_name)
+        vis_result = draw_emotion_recognition_one_frame(image, ret)
+
+        start_x, start_y = np.clip(vis_result.shape[0] - self.bars_size, 0, vis_result.shape[0]), \
+                           np.clip(vis_result.shape[1] - self.bars_size - Y_OFFSET, 0,
+                                   vis_result.shape[0])
+        alpha_mask_overlay = overlay[:, :, 3] / 255.0
+        overlay_background = overlay[..., :3]
+        overlay_image_alpha(vis_result, overlay_background, 0, 0, alpha_mask_overlay)
+        for emotion, emotion_bar in self.bars.items():
+            percent = self.get_current_emotion_percent(emotion)
+            text = f'{emotion.upper()} - {percent}%'
+            vis_result = add_class_names_and_percents(vis_result, [start_x, int(vis_result.shape[1] - Y_OFFSET / 2)],
+                                                      text)
+            alpha_mask = emotion_bar.alpha_mask
+            overlay_image_alpha(vis_result, emotion_bar.bar, start_x, start_y, alpha_mask)
+            start_x = np.clip(start_x - self.bars_size - X_OFFSET, 0, vis_result.shape[0])
+        return vis_result
+
+
     def create_result_emotion_bar(self, save: bool = False):
         result_statistic = np.zeros((self.result_bar_size, self.result_bar_size, 3), dtype=np.uint8)
         result_statistic = add_info(result_statistic, [0, int(0.1 * self.result_bar_size)], BACKGROUND_COLOR, 'STATISTICS', WHITE_TEXT_COLOR)
@@ -164,7 +165,7 @@ class EmotionAnalyzer:
             start_x = np.clip(start_x - self.bars_size - 15 * X_OFFSET, 0, result_statistic.shape[0])
         if save:
             cv2.imwrite('result_statistic_emotion_bar.png', result_statistic)
-        return result_statistic
+        return  result_statistic
 
 
 class EmotionBar:

@@ -31,7 +31,7 @@ This contains the code for **Emotion Recognition using OpenCV AI KIT and Modelpl
 
 To make the code working as described in a blog post, run it with the following command:
 
-`python main.py --model-path <PATH_TO_EMOTION_RECOGNITION_MODEL>`
+`python main.py --model-path $PATH_TO_EMOTION_RECOGNITION_MODEL`
 
 
 ```

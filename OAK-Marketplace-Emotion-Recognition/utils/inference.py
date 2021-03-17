@@ -1,13 +1,7 @@
-from emotion_recognition_retail import InferenceModel, process_frame
+from emotion_recognition_retail import process_frame
 import cv2
 import numpy as np
-from .visualization import statistics_update
-
-
-def build_model(model_path):
-    model = InferenceModel(model_path=model_path)
-    model.model_load()
-    return model
+from visualization import statistics_update
 
 
 def process_cam(model, emotion_analyzer, show: bool = True):

@@ -2,8 +2,16 @@ This contains the code for **Emotion Recognition using OpenCV AI KIT and Modelpl
 
 # OAK Emotion Recognition 
 
+![](images/demo.gif)
+
+## Requirements
+- Install Python 3.7 or higher and run: ```python3 -m pip install -r requirements.txt```
+
+- Install [FFmpeg](https://ffmpeg.org/download.html)  
+
 
 ## Installation:
+
 
 1. Clone [repository](https://github.com/opencv-ai/oak-model-samples) with OAK model samples by the following comand:
 
@@ -27,14 +35,14 @@ To make the code working as described in a blog post, run it with the following 
 
 
 ```
-usage: main.py [-h] [--model_path MODEL_PATH] [-vis {0,1}]
+usage: main.py [-h] [--model-path MODEL_PATH] [-visualize {0,1}]
                [--save-video {0,1}] [--save-statistics {0,1}]
 
 optional arguments:
   -h, --help            show this help message and exit
   --model-path MODEL_PATH
-                        Path to root model directory
-  -vis {0,1}            If set to 1, visualize the results
+                        Path to Emotion Recognition model
+  -visualize {0,1}      If set to 1, visualize the results
   --save-video {0,1}    If set to 1, save the visualization results onto a MP4
                         video file
   --save-statistics {0,1}

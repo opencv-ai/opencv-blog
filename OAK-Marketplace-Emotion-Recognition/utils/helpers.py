@@ -1,5 +1,4 @@
 import skvideo.io
-import os
 
 FFMPEG_OUTPUT_DICT = {
     "-vcodec": "libx265",
@@ -8,8 +7,8 @@ FFMPEG_OUTPUT_DICT = {
 }
 
 
-def save_video(visualization_results):
-    writer = skvideo.io.FFmpegWriter("inference_results.mp4", outputdict=FFMPEG_OUTPUT_DICT,
+def save_video(visualization_results, save_path: str = "inference_results.mp4"):
+    writer = skvideo.io.FFmpegWriter(save_path, outputdict=FFMPEG_OUTPUT_DICT,
     )
     for frame in visualization_results:
         writer.writeFrame(frame[:, :, ::-1])

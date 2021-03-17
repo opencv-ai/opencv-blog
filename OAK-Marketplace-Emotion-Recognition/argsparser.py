@@ -5,11 +5,11 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument(
         "--model-path",
-        help="Path to root model directory",
+        help="Path to Emotion Recognition model",
         type=str,
     )
     parser.add_argument(
-        "-vis",
+        "-visualize",
         type=int,
         choices=[0, 1],
         help="If set to 1, visualize the results",

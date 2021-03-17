@@ -1,5 +1,8 @@
 This contains the code for **Emotion Recognition using OpenCV AI KIT and Modelplace**. For more information - visit [OpenCV.AI](https://www.opencv.ai/).
 
+# OAK Emotion Recognition 
+
+
 ## Installation:
 
 1. Clone [repository](https://github.com/opencv-ai/oak-model-samples) with OAK model samples by the following comand:

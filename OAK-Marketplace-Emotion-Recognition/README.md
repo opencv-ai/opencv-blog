@@ -19,7 +19,7 @@ This contains the code for **Emotion Recognition using OpenCV AI KIT and Modelpl
 
 2. Set up Emotion Recognition package by following commands:
 
-   2.1 `cd emotion_recognition_retail`
+   2.1 `cd oak-model-samples/emotion_recognition_retail`
    
    2.2 `export PATH_TO_EMOTION_RECOGNITION_MODEL=$(pwd)`
    

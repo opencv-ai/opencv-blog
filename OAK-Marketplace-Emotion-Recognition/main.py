@@ -4,7 +4,6 @@ from argsparser import parse_args
 from utils.inference import process_cam
 from utils.utils import save_video
 from emotion_analyzer import EmotionAnalyzer
-import cv2
 
 
 def main():
@@ -15,15 +14,20 @@ def main():
     model = InferenceModel(model_path=model_path)  # Initialize the emotion recognition model
     model.model_load()  # Load weights
 
-    emotion_analyzer = EmotionAnalyzer()
-    visualization_results = process_cam(model, emotion_analyzer, show=args.visualize)
+    # build emotion analyzer object, which will aggregate model results and display up-to-date emotion bars
+    emotion_analyzer = EmotionAnalyzer(visualization_shape=args.vis_shape)
+
+    # inference model and get visualization results with emotion bars
+    visualization_results = process_cam(model, emotion_analyzer, show=args.visualize, visualization_shape=args.vis_shape)
+
+    # save result video
     if args.save_video:
         save_video(visualization_results)
+    # create report with emotion bar statistic
     result_emotion_bar = emotion_analyzer.create_result_emotion_bar(save=args.save_statistics)
+    # create report emotion pie chart
     result_emotion_pie_chart = emotion_analyzer.create_statistic_pie_chart(save=args.save_statistics)
-    # result_emotion_bar.show()
-    cv2.imshow('Result Statistic', result_emotion_bar)
-    cv2.waitKey(0)
+    result_emotion_bar.show()
     result_emotion_pie_chart.show()
 
 

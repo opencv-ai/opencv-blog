@@ -29,4 +29,11 @@ def parse_args():
         help="If set to 1, save the statistics onto a PNG image file",
         default=1,
     )
+    parser.add_argument(
+        "--vis-shape",
+        type=int,
+        nargs="+",
+        help="Visualization results resolution (width, height)",
+        default=(300, 300),
+    )
     return parser.parse_args()

@@ -1,22 +1,24 @@
 from oak_inference_utils.inference import process_frame
+from emotion_recognition_retail import InferenceModel
 import cv2
 import numpy as np
 
 
-def resize_emotion_label(img, ret, target_shape):
+def resize_emotion_bboxes(img, results, target_size):
     img_h, img_w, _ = img.shape
-    if img_h / img_w < target_shape[1] /target_shape[0]:
-        scale = img_h / target_shape[1]
+    if img_h / img_w < target_size / target_size:
+        scale = img_h / target_size
     else:
-        scale = img_w / target_shape[0]
-    ret[0].bbox.x1 = int(ret[0].bbox.x1 / scale)
-    ret[0].bbox.x2 = int(ret[0].bbox.x2 / scale)
-    ret[0].bbox.y1 = int(ret[0].bbox.y1 / scale)
-    ret[0].bbox.y2 = int(ret[0].bbox.y2 / scale)
-    return ret
+        scale = img_w / target_size
+    for ret in results:
+        ret.bbox.x1 = int(ret.bbox.x1 / scale)
+        ret.bbox.x2 = int(ret.bbox.x2 / scale)
+        ret.bbox.y1 = int(ret.bbox.y1 / scale)
+        ret.bbox.y2 = int(ret.bbox.y2 / scale)
+    return results
 
 
-def process_cam(model, emotion_analyzer, show: bool = True, visualization_shape: tuple = (300, 300)):
+def process_cam(model: InferenceModel, emotion_analyzer, show: bool = True, visualization_size: int = 300):
     visualization_results = []
     # build camera object and add it to OAK pipeline
     model.add_cam_to_pipeline()
@@ -34,13 +36,13 @@ def process_cam(model, emotion_analyzer, show: bool = True, visualization_shape:
         ret, proceed = process_frame(image, model, visualization_func=None)
 
         # resized image and model inference results
-        if visualization_shape != (300, 300):
+        if visualization_size != 300:
             if ret:
-                ret = resize_emotion_label(image, ret, visualization_shape)
-            image = cv2.resize(image, tuple(visualization_shape))
+                ret = resize_emotion_bboxes(image, ret, visualization_size)
+            image = cv2.resize(image, (visualization_size, visualization_size))
 
         # update emotion statistic and visualize it using emotion bar
-        vis_result = emotion_analyzer.statistics_update(image, ret)
+        vis_result = emotion_analyzer.visualization_update(image, ret)
         visualization_results.append(vis_result)
 
         # show processed image

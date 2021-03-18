@@ -30,10 +30,9 @@ def parse_args():
         default=1,
     )
     parser.add_argument(
-        "--vis-shape",
+        "--visualization-size",
         type=int,
-        nargs="+",
-        help="Visualization results resolution (width, height)",
-        default=(300, 300),
+        help="Visualization results size. You should specify only one number.",
+        default=300,
     )
     return parser.parse_args()

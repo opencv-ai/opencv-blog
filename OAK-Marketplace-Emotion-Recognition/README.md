@@ -37,7 +37,7 @@ To make the code working as described in a blog post, run it with the following 
 ```
 usage: main.py [-h] [--model-path MODEL_PATH] [-visualize {0,1}]
                [--save-video {0,1}] [--save-statistics {0,1}]
-               [--vis-shape VIS_SHAPE [VIS_SHAPE ...]]
+               [--visualization-size VISUALIZATION_SIZE]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -48,7 +48,7 @@ optional arguments:
                         video file
   --save-statistics {0,1}
                         If set to 1, save the statistics onto a PNG image file
-  --vis-shape VIS_SHAPE [VIS_SHAPE ...]
-                        Visualization results resolution (width, height)
+  --visualization-size  Visualization results size. You should specify only
+                        one number.
 ```
 

@@ -46,26 +46,33 @@ def overlay_image_alpha(img, img_overlay, x, y, alpha_mask=None):
 
 
 class EmotionAnalyzer:
-    def __init__(self, statistic_path: str = "result_statistic.json",
-                 visualization_shape: tuple = (300, 300),
+    def __init__(self, out_statistic_path: str = "result_statistic.json",
+                 visualization_shape: int = 300,
                  report_statistics_shape: int = 720,
-                 emotion_bar_offset_percent: float = 0.1):
+                 emotion_bar_offset_percent: float = 0.1,
+                 emotion_images_path: str = "images/emoji"):
         self.emotion_bar_offset_percent = emotion_bar_offset_percent
-        self.output_statistic_path = statistic_path
+        self.output_statistic_path = out_statistic_path
         self.bar_size, self.padding, emotion_size = self.relative_size_estimation(visualization_shape)
         self.vis_shape = visualization_shape
         self.report_statistics_shape = report_statistics_shape
         self.bars = {
-            "happy": EmotionBar(emotion='happy', size=self.bar_size, emotion_size=emotion_size),
-            "sad": EmotionBar(emotion='sad', size=self.bar_size, emotion_size=emotion_size),
-            "anger": EmotionBar(emotion='anger', size=self.bar_size, emotion_size=emotion_size),
-            "surprise": EmotionBar(emotion='surprise', size=self.bar_size, emotion_size=emotion_size),
-            "neutral": EmotionBar(emotion='neutral', size=self.bar_size, emotion_size=emotion_size),
+            "happy": EmotionBar(emotion='happy', size=self.bar_size,
+                                emotion_size=emotion_size,
+                                emotion_path= os.path.join(emotion_images_path, 'happy.png')),
+            "sad": EmotionBar(emotion='sad', size=self.bar_size, emotion_size=emotion_size,
+                              emotion_path= os.path.join(emotion_images_path, 'sad.png')),
+            "anger": EmotionBar(emotion='anger', size=self.bar_size, emotion_size=emotion_size,
+                                emotion_path= os.path.join(emotion_images_path, 'anger.png')),
+            "surprise": EmotionBar(emotion='surprise', size=self.bar_size, emotion_size=emotion_size,
+                                   emotion_path= os.path.join(emotion_images_path, 'surprise.png')),
+            "neutral": EmotionBar(emotion='neutral', size=self.bar_size, emotion_size=emotion_size,
+                                  emotion_path= os.path.join(emotion_images_path, 'neutral.png'))
         }
         self.fill_bars()
 
-    def relative_size_estimation(self, visualization_size, bar_amount:int = 5):
-        bar_section_size = visualization_size[0] / bar_amount
+    def relative_size_estimation(self, visualization_size, bar_amount: int = 5):
+        bar_section_size = visualization_size / bar_amount
         bar_size = int(bar_section_size - 2 * bar_section_size * self.emotion_bar_offset_percent)
         padding = int(bar_section_size - bar_size)
         emotion_size = (int(bar_size / 3), int(bar_size / 3))
@@ -118,10 +125,10 @@ class EmotionAnalyzer:
         top_emotion, _ = sorted({x: y.update_count for x, y in self.bars.items()}.items(), key=operator.itemgetter(1))[-1]
         return self.bars[top_emotion].progress, top_emotion
 
-    def statistics_update(self, image, ret):
+    def visualization_update(self, image, ret):
         overlay = cv2.imread(OVERLAY_PATH, cv2.IMREAD_UNCHANGED)
-        if self.vis_shape != (300, 300):
-            overlay = cv2.resize(overlay, tuple(self.vis_shape))
+        if self.vis_shape != 300:
+            overlay = cv2.resize(overlay, (self.vis_shape, self.vis_shape))
         if ret:
             class_name = ret[0].emotions[0].class_name
             self.update_bars(class_name)
@@ -170,7 +177,7 @@ class EmotionAnalyzer:
 
         # calculate new relative bar parameters
         result_bar_size, result_bar_padding, result_emotion_size = self.relative_size_estimation(
-            (self.report_statistics_shape, self.report_statistics_shape),bar_amount=4)
+                                                                        self.report_statistics_shape, bar_amount=4)
 
         start_x, start_y = np.clip(self.report_statistics_shape - result_bar_size - int(result_bar_padding / 2), 0,
                                    self.report_statistics_shape), \
@@ -209,26 +216,11 @@ class EmotionBar:
         update_count: int = 0,
         progress: float = 0.0,
         emotion_size: tuple = (25, 25),
-        emotions_path: str = 'images/emoji',
+        emotion_path: str = 'images/emoji/happy.png',
     ):
-
-        self.emotion_images = {
-            'neutral': np.array(
-                Image.open(os.path.join(emotions_path, "neutral.png"))),
-            'happy': np.array(
-                Image.open(os.path.join(emotions_path, "happy.png"))),
-            'sad': np.array(
-                Image.open(os.path.join(emotions_path, "sad.png"))),
-            'anger': np.array(
-                Image.open(os.path.join(emotions_path, "anger.png"))),
-            'surprise': np.array(
-                Image.open(os.path.join(emotions_path, "surprise.png")))
-        }
-        if emotion not in self.emotion_images.keys():
-            raise Exception(f"emotion argument should be one of {self.emotion_images.keys()}!")
-
         self.__update_count = update_count
         self.__progress = progress
+        self.emotion_image = np.array(Image.open(emotion_path).resize(emotion_size))
         self.size = size
         self.emotion_size = emotion_size
         self.emotion = emotion
@@ -280,13 +272,11 @@ class EmotionBar:
             angle=0, startAngle=self.start_angle - 1, endAngle=self.end_angle + 1,
             color=(0, 0, 0), thickness=-1,
         )
-        # get emotion image
-        emotion_image = cv2.resize(self.emotion_images[self.emotion], self.emotion_size)
-        alpha_mask = emotion_image[:, :, 3] / 255.0
-        overlay_emotion = emotion_image[:, :, :3][:,:,::-1]
+        alpha_mask = self.emotion_image[:, :, 3] / 255.0
+        overlay_emotion = self.emotion_image[:, :, :3][:,:,::-1]
         overlay_image_alpha(
-            self.bar, overlay_emotion, int(self.center[0] - emotion_image.shape[0] / 2),
-            int(self.center[1] - emotion_image.shape[1] / 2), alpha_mask,
+            self.bar, overlay_emotion, int(self.center[0] - self.emotion_image.shape[0] / 2),
+            int(self.center[1] - self.emotion_image.shape[1] / 2), alpha_mask,
         )
         self.alpha_mask = (~(self.bar == np.zeros((self.size, self.size, 3), dtype=np.uint8))[:, :, 0]).astype(int)
 

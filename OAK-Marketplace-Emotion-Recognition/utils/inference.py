@@ -1,4 +1,4 @@
-from emotion_recognition_retail import process_frame
+from oak_inference_utils.inference import process_frame
 import cv2
 import numpy as np
 

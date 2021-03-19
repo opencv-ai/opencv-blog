@@ -51,7 +51,6 @@ optional arguments:
                         video file
   --save-statistics {0,1}
                         If set to 1, save the statistics onto a PNG image file
-  --visualization-size  Visualization results size. You should specify only
-                        one number.
+  --visualization-size Visualization size (pixels)
 ```
 

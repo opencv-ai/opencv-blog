@@ -47,13 +47,13 @@ def overlay_image(img, img_overlay, x, y, alpha_mask=None):
 
 
 class EmotionAnalyzer:
-    def __init__(self, out_statistic_path: str = "result_statistic.json",
+    def __init__(self, out_statistics_path: str = "result_statistic.json",
                  visualization_size: int = 300,
                  report_statistics_shape: int = 720,
                  emotion_bar_offset_percent: float = 0.1,
                  emotion_images_path: str = "images/emoji"):
         self.emotion_bar_offset_percent = emotion_bar_offset_percent
-        self.output_statistic_path = out_statistic_path
+        self.output_statistics_path = out_statistics_path
         self.bar_size, self.padding, emotion_size = self.relative_size_estimation(visualization_size)
         self.report_statistics_shape = report_statistics_shape
         self.bars = {
@@ -82,24 +82,25 @@ class EmotionAnalyzer:
         for x in self.bars.values():
             x.update_bar()
 
-    def get_emotions_total_amount(self):
+    def get_total_update_counts(self):
         return sum([self.bars[x].update_count for x in self.bars.keys()])
 
-    def update_bars(self, emotion):
-        self.bars[emotion].update_count = self.bars[emotion].update_count + 1
-        # respectively update all others bars
+    def update_bars(self, top_emotion):
+        self.bars[top_emotion].update_count = self.bars[top_emotion].update_count + 1
+        total_amount = self.get_total_update_counts()
+        # update all others bars
         for emotion in self.bars.keys():
-            progress = self.bars[emotion].update_count / self.get_emotions_total_amount()
+            progress = self.bars[emotion].update_count / total_amount
             self.bars[emotion].update_bar(progress)
 
-    def dump_statistic_to_json(self):
-        with open(self.output_statistic_path, 'w') as outfile:
-            statistic = {x: y.update_count for x, y in self.bars.items()}
-            json.dump(statistic, outfile, indent=4, sort_keys=True)
+    def save_statistic_to_json(self):
+        with open(self.output_statistics_path, 'w') as outfile:
+            statistics = {x: y.update_count for x, y in self.bars.items()}
+            json.dump(statistics, outfile, indent=1, sort_keys=True)
 
     def get_current_emotion_percent(self, emotion):
-        if self.get_emotions_total_amount() != 0:
-            return int((self.bars[emotion].update_count / self.get_emotions_total_amount()) * 100)
+        if self.get_total_update_counts() != 0:
+            return int((self.bars[emotion].update_count / self.get_total_update_counts()) * 100)
         else:
             return 0
 

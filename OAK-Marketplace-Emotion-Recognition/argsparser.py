@@ -32,7 +32,7 @@ def parse_args():
     parser.add_argument(
         "--visualization-size",
         type=int,
-        help="Visualization results size. You should specify only one number.",
+        help="Visualization size (pixels)",
         default=300,
     )
     return parser.parse_args()

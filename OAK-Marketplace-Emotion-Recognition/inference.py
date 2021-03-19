@@ -3,7 +3,7 @@ from emotion_recognition_retail import InferenceModel
 import cv2
 import numpy as np
 
-OVERLAY_PATH = "images/overlay.png"
+
 
 
 def resize_emotion_bboxes(img, results, target_size):
@@ -22,9 +22,6 @@ def resize_emotion_bboxes(img, results, target_size):
 
 def process_cam(model: InferenceModel, emotion_analyzer, show: bool = True, visualization_size: int = 300):
     visualization_results = []
-
-    # read overlay for visualization image
-    overlay = cv2.imread(OVERLAY_PATH, cv2.IMREAD_UNCHANGED)
 
     # build camera object and add it to OAK pipeline
     model.add_cam_to_pipeline()
@@ -45,11 +42,10 @@ def process_cam(model: InferenceModel, emotion_analyzer, show: bool = True, visu
         if visualization_size != input_width:
             if ret:
                 ret = resize_emotion_bboxes(image, ret, visualization_size)
-            overlay = cv2.resize(overlay, (visualization_size, visualization_size))
             image = cv2.resize(image, (visualization_size, visualization_size))
 
         # update emotion statistic and visualize it using emotion bar
-        vis_result = emotion_analyzer.visualization_update(image, overlay,  ret)
+        vis_result = emotion_analyzer.draw(image, ret)
         visualization_results.append(vis_result)
 
         # show processed image

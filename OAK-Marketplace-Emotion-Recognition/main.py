@@ -29,7 +29,7 @@ def main():
     result_emotion_bar = emotion_analyzer.create_result_emotion_bar(save=args.save_statistics)
 
     # create report emotion pie chart
-    result_emotion_pie_chart = emotion_analyzer.create_statistic_pie_chart(save=args.save_statistics)
+    result_emotion_pie_chart = emotion_analyzer.create_statistics_pie_chart(save=args.save_statistics)
 
     # show statistic
     result_emotion_bar.show()

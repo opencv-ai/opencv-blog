@@ -15,7 +15,7 @@ def main():
     model.model_load()  # Load weights
 
     # build emotion analyzer object, which will aggregate model results and display up-to-date emotion bars
-    emotion_analyzer = EmotionAnalyzer(visualization_shape=args.visualization_size)
+    emotion_analyzer = EmotionAnalyzer(visualization_size=args.visualization_size)
 
     # inference model and get visualization results with emotion bars
     visualization_results = process_cam(model, emotion_analyzer, show=args.visualize,

@@ -8,9 +8,9 @@ This contains the code for **Emotion Recognition using OpenCV AI KIT and Modelpl
 
 - Install Python 3.7 or higher and run: `python3 -m pip install -r requirements.txt`
 
+- Install [Emotion Recognition OAK model](https://github.com/opencv-ai/opencv-blog/tree/main/OAK-Marketplace-Emotion-Recognition#installation-of-emotion-recognition-oak-package)
+  
 - Install [FFmpeg](https://ffmpeg.org/download.html)
-
-- Install [Emotion Recognition OAK model](https://github.com/opencv-ai/oak-model-samples/tree/main/emotion_recognition_retail)
 
 ## Installation of Emotion Recognition OAK package:
 
@@ -22,7 +22,7 @@ This contains the code for **Emotion Recognition using OpenCV AI KIT and Modelpl
    git checkout 54fa4fe8bd2bb42d6bae49213dbbe6b2f1ce5c5e
    ```
 
-2) Set up Emotion Recognition package by following commands:
+2) Set up Emotion Recognition OAK package:
 
    2.1 `cd emotion_recognition_retail`
 
@@ -36,7 +36,9 @@ This contains the code for **Emotion Recognition using OpenCV AI KIT and Modelpl
 
 To make the code working as described in a blog post, run it with the following command:
 
-`python main.py --model-path $PATH_TO_EMOTION_RECOGNITION_MODEL`
+```bash
+python main.py --model-path $PATH_TO_EMOTION_RECOGNITION_MODEL
+```
 
 ```
 usage: main.py [-h] [--model-path MODEL_PATH] [-visualize {0,1}]

@@ -2,7 +2,7 @@ This contains the code for **Emotion Recognition using OpenCV AI KIT and Modelpl
 
 # OAK Emotion Recognition
 
-![](images/demo.gif)
+![](images/usage_example.gif)
 
 ## Requirements
 

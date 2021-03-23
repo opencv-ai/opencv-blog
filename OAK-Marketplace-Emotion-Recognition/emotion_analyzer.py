@@ -30,6 +30,7 @@ class EmotionAnalyzer:
         self.x_offset_percent = 0.05
         self.emotion_bar_offset_percent = 0.1
 
+        self.emotion_images_path = emotion_images_path
         self.output_statistics_path = out_statistics_path
         self.bar_size, self.padding, emotion_size = self._relative_size_estimation(
             visualization_size,
@@ -39,18 +40,16 @@ class EmotionAnalyzer:
             cv2.imread(overlay_image_path, cv2.IMREAD_UNCHANGED),
             (visualization_size, visualization_size),
         )
-        self._init_bars(
-            emotion_size=emotion_size, emotion_images_path=emotion_images_path,
-        )
+        self._init_bars(emotion_size=emotion_size)
 
-    def _init_bars(self, emotion_size, emotion_images_path):
+    def _init_bars(self, emotion_size):
         self.bars = {
             "happy": {
                 "bar": EmotionBar(
                     emotion="happy",
                     bar_size=self.bar_size,
                     emotion_size=emotion_size,
-                    emotion_path=os.path.join(emotion_images_path, "happy.png"),
+                    emotion_path=os.path.join(self.emotion_images_path, "happy.png"),
                 ),
                 "count": 0,
             },
@@ -59,7 +58,7 @@ class EmotionAnalyzer:
                     emotion="sad",
                     bar_size=self.bar_size,
                     emotion_size=emotion_size,
-                    emotion_path=os.path.join(emotion_images_path, "sad.png"),
+                    emotion_path=os.path.join(self.emotion_images_path, "sad.png"),
                 ),
                 "count": 0,
             },
@@ -68,7 +67,7 @@ class EmotionAnalyzer:
                     emotion="anger",
                     bar_size=self.bar_size,
                     emotion_size=emotion_size,
-                    emotion_path=os.path.join(emotion_images_path, "anger.png"),
+                    emotion_path=os.path.join(self.emotion_images_path, "anger.png"),
                 ),
                 "count": 0,
             },
@@ -77,7 +76,7 @@ class EmotionAnalyzer:
                     emotion="surprise",
                     bar_size=self.bar_size,
                     emotion_size=emotion_size,
-                    emotion_path=os.path.join(emotion_images_path, "surprise.png"),
+                    emotion_path=os.path.join(self.emotion_images_path, "surprise.png"),
                 ),
                 "count": 0,
             },
@@ -86,7 +85,7 @@ class EmotionAnalyzer:
                     emotion="neutral",
                     bar_size=self.bar_size,
                     emotion_size=emotion_size,
-                    emotion_path=os.path.join(emotion_images_path, "neutral.png"),
+                    emotion_path=os.path.join(self.emotion_images_path, "neutral.png"),
                 ),
                 "count": 0,
             },
@@ -230,12 +229,12 @@ class EmotionAnalyzer:
         top_bar = EmotionBar(
             bar_size=top_bar_size,
             emotion_size=top_bar_emotion_size,
-            emotion=top_emotion,
+            emotion_path=os.path.join(self.emotion_images_path, f"{top_emotion}.png")
         )
         top_bar.update(progress=top_bar_progress)
         top_bar_x = int(self.report_statistics_size / 2 - top_bar_size / 2)
         top_bar_y = int(self.report_statistics_size / 2 - top_bar_size / 2)
-        text = f"YOU WERE MOSTLY  {top_bar.emotion.upper()} - {self.get_emotion_percent(top_bar.emotion)}%"
+        text = f"YOU WERE MOSTLY  {top_emotion.upper()} - {self.get_emotion_percent(top_emotion)}%"
 
         y_offset = int(self.report_statistics_size * self.y_offset_percent)
         # place text with top emotion and percent
@@ -283,6 +282,7 @@ class EmotionAnalyzer:
             cur_progress = emotion_bar["bar"].progress
             cur_bar = EmotionBar(
                 bar_size=result_bar_size, emotion_size=result_emotion_size,
+                emotion_path=os.path.join(self.emotion_images_path, f"{emotion}.png")
             )
             cur_bar.update(progress=cur_progress)
 
@@ -312,7 +312,6 @@ class EmotionBar:
     def __init__(
         self,
         bar_size: int = 80,
-        emotion: str = "happy",
         progress: float = 0.0,
         emotion_size: tuple = (25, 25),
         emotion_path: str = "images/emoji/happy.png",
@@ -323,7 +322,6 @@ class EmotionBar:
         self.emotion_image = np.array(Image.open(emotion_path).resize(emotion_size))
         self.bar_size = bar_size
         self.emotion_size = emotion_size
-        self.emotion = emotion
         self._init_params(**kwargs)
 
     def _init_params(self, **kwargs):

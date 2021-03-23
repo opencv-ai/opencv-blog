@@ -1,15 +1,13 @@
 import json
 import operator
 import os
-from typing import Tuple, List
+from typing import List, Tuple
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from modelplace_api.objects import EmotionLabel
-from modelplace_api.visualization import (
-    add_info,
-    draw_emotion_recognition_one_frame,
-)
+from modelplace_api.visualization import add_info, draw_emotion_recognition_one_frame
 from PIL import Image
 from utils.visualization import add_class_names_and_percents, overlay_image
 
@@ -99,8 +97,9 @@ class EmotionAnalyzer:
     def _increment_count(self, emotion: str) -> None:
         self.bars[emotion]["count"] += 1
 
-    def _relative_size_estimation(self, visualization_size: int,
-                                  bar_amount: int = 5) -> Tuple[int, int, int]:
+    def _relative_size_estimation(
+        self, visualization_size: int, bar_amount: int = 5,
+    ) -> Tuple[int, int, int]:
         bar_section_size = visualization_size / bar_amount
         bar_size = int(
             bar_section_size - 2 * bar_section_size * self.emotion_bar_offset_percent,
@@ -144,13 +143,15 @@ class EmotionAnalyzer:
     def get_total_update_counts(self) -> int:
         return sum([self.bars[x]["count"] for x in self.bars.keys()])
 
-    def update_bars(self, top_emotion: str) -> None:
-        self._increment_count(top_emotion)
-        total_amount = self.get_total_update_counts()
-        # update all others bars
-        for emotion in self.bars.keys():
-            progress = self.bars[emotion]["count"] / total_amount
-            self.bars[emotion]["bar"].update(progress)
+    def update_bars(self, ret: List[EmotionLabel]) -> None:
+        if ret:
+            class_name = ret[0].emotions[0].class_name
+            self._increment_count(class_name)
+            total_amount = self.get_total_update_counts()
+            # update all others bars
+            for emotion in self.bars.keys():
+                progress = self.bars[emotion]["count"] / total_amount
+                self.bars[emotion]["bar"].update(progress)
 
     def save_statistic_to_json(self) -> None:
         with open(self.output_statistics_path, "w") as outfile:
@@ -166,7 +167,7 @@ class EmotionAnalyzer:
             return 0
 
     def create_statistics_pie_chart(
-            self, save: bool = False, save_path: str = "result_statistics_pie_chart.png",
+        self, save: bool = False, save_path: str = "result_statistics_pie_chart.png",
     ) -> plt:
         statistics = {x: y["count"] for x, y in self.bars.items()}
         emotions = list(statistics.keys())
@@ -203,15 +204,12 @@ class EmotionAnalyzer:
         return self.bars[top_emotion]["bar"].progress, top_emotion
 
     def draw(self, image: np.ndarray, ret: List[EmotionLabel]) -> np.ndarray:
-        if ret:
-            class_name = ret[0].emotions[0].class_name
-            self.update_bars(class_name)
         vis_result = draw_emotion_recognition_one_frame(image, ret)
         vis_result = self.draw_bars(vis_result)
         return vis_result
 
     def create_result_emotion_bar(
-            self, save: bool = False, save_path: str = "result_statistic_emotion_bar.png",
+        self, save: bool = False, save_path: str = "result_statistic_emotion_bar.png",
     ) -> Image.Image:
         result_statistic = np.zeros(
             (self.report_statistics_size, self.report_statistics_size, 3),
@@ -219,9 +217,14 @@ class EmotionAnalyzer:
         )
         result_statistic = add_class_names_and_percents(
             result_statistic,
-            [int(self.report_statistics_size // 2 - 1.5 * self.x_offset_percent * self.report_statistics_size),
-             int(1.5 * self.y_offset_percent * self.report_statistics_size)],
-            "SUMMARY"
+            [
+                int(
+                    self.report_statistics_size // 2
+                    - 1.5 * self.x_offset_percent * self.report_statistics_size,
+                ),
+                int(1.5 * self.y_offset_percent * self.report_statistics_size),
+            ],
+            "SUMMARY",
         )
         # create top bar
         top_bar_progress, top_emotion = self.get_top_bar_parameters()
@@ -230,7 +233,7 @@ class EmotionAnalyzer:
         top_bar = EmotionBar(
             bar_size=top_bar_size,
             emotion_size=top_bar_emotion_size,
-            emotion_path=os.path.join(self.emotion_images_path, f"{top_emotion}.png")
+            emotion_path=os.path.join(self.emotion_images_path, f"{top_emotion}.png"),
         )
         top_bar.update(progress=top_bar_progress)
         top_bar_x = int(self.report_statistics_size / 2 - top_bar_size / 2)
@@ -239,12 +242,13 @@ class EmotionAnalyzer:
 
         y_offset = int(self.report_statistics_size * self.y_offset_percent)
         # place text with top emotion and percent
-        result_statistic = add_info(result_statistic,
-                                    [top_bar_x - top_bar_size // 4,
-                                     int(top_bar_y - y_offset)],
-                                    BACKGROUND_COLOR,
-                                    text,
-                                    WHITE_TEXT_COLOR)
+        result_statistic = add_info(
+            result_statistic,
+            [top_bar_x - top_bar_size // 4, int(top_bar_y - y_offset)],
+            BACKGROUND_COLOR,
+            text,
+            WHITE_TEXT_COLOR,
+        )
 
         # overlay top bar on result statistic image
         top_bar_alpha_mask = top_bar.alpha_mask
@@ -282,8 +286,9 @@ class EmotionAnalyzer:
             text = f"{emotion.upper()} - {percent}%"
             cur_progress = emotion_bar["bar"].progress
             cur_bar = EmotionBar(
-                bar_size=result_bar_size, emotion_size=result_emotion_size,
-                emotion_path=os.path.join(self.emotion_images_path, f"{emotion}.png")
+                bar_size=result_bar_size,
+                emotion_size=result_emotion_size,
+                emotion_path=os.path.join(self.emotion_images_path, f"{emotion}.png"),
             )
             cur_bar.update(progress=cur_progress)
 
@@ -321,7 +326,9 @@ class EmotionBar:
         self._progress = progress
         self.bar = np.zeros((bar_size, bar_size, 3), dtype=np.uint8)
         self.emotion_shape = (emotion_size, emotion_size)
-        self.emotion_image = np.array(Image.open(emotion_path).resize(self.emotion_shape))
+        self.emotion_image = np.array(
+            Image.open(emotion_path).resize(self.emotion_shape),
+        )
         self.bar_size = bar_size
         self.emotion_size = emotion_size
         self._init_params(**kwargs)

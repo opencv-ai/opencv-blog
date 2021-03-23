@@ -1,13 +1,14 @@
 import numpy as np
 from modelplace_api.visualization import (
-    INFO_TEXT_SIZE,
     MONTSERATT_BOLD_TTF_PATH,
-    NORM_HEIGHT,
-    TEXT_OFFSET_X,
-    TEXT_OFFSET_Y,
-    WHITE_TEXT_COLOR,
 )
 from PIL import Image, ImageDraw, ImageFont
+
+INFO_TEXT_SIZE = 12
+NORM_HEIGHT = 591
+TEXT_OFFSET_X = 16
+TEXT_OFFSET_Y = 8
+WHITE_TEXT_COLOR = (255, 255, 255, 1)
 
 
 def add_class_names_and_percents(image, coords: list, text: str) -> np.ndarray:

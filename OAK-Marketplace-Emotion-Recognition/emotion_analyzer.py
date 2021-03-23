@@ -7,13 +7,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from modelplace_api.objects import EmotionLabel
 from modelplace_api.visualization import (
-    BACKGROUND_COLOR,
-    WHITE_TEXT_COLOR,
     add_info,
     draw_emotion_recognition_one_frame,
 )
 from PIL import Image
 from utils.visualization import add_class_names_and_percents, overlay_image
+
+BACKGROUND_COLOR = (79, 79, 79, 1)
+WHITE_TEXT_COLOR = (255, 255, 255, 1)
 
 
 class EmotionAnalyzer:
@@ -26,6 +27,7 @@ class EmotionAnalyzer:
         overlay_image_path: str = "images/overlay.png",
     ) -> None:
         self.y_offset_percent = 0.05
+        self.x_offset_percent = 0.05
         self.emotion_bar_offset_percent = 0.1
 
         self.output_statistics_path = out_statistics_path
@@ -130,9 +132,9 @@ class EmotionAnalyzer:
             vis_result = add_class_names_and_percents(
                 vis_result, [start_x, int(vis_result.shape[0] - y_offset / 2)], text,
             )
-            alpha_mask = emotion_bar["bar"].alpha_mask
+            bar_alpha_mask = emotion_bar["bar"].get_bar_alpha_mask
             vis_result = overlay_image(
-                vis_result, emotion_bar["bar"].bar, start_x, start_y, alpha_mask,
+                vis_result, emotion_bar["bar"].bar, start_x, start_y, bar_alpha_mask,
             )
             start_x = np.clip(
                 start_x - self.bar_size - self.padding, 0, vis_result.shape[1],
@@ -215,12 +217,11 @@ class EmotionAnalyzer:
             (self.report_statistics_size, self.report_statistics_size, 3),
             dtype=np.uint8,
         )
-        result_statistic = add_info(
+        result_statistic = add_class_names_and_percents(
             result_statistic,
-            [0, int(self.emotion_bar_offset_percent * self.report_statistics_size)],
-            BACKGROUND_COLOR,
-            "STATISTICS",
-            WHITE_TEXT_COLOR,
+            [int(self.report_statistics_size // 2 - 1.5 * self.x_offset_percent * self.report_statistics_size),
+             int(1.5 * self.y_offset_percent * self.report_statistics_size)],
+            "SUMMARY"
         )
         # create top bar
         top_bar_progress, top_emotion = self.get_top_bar_parameters()
@@ -234,17 +235,21 @@ class EmotionAnalyzer:
         top_bar.update(progress=top_bar_progress)
         top_bar_x = int(self.report_statistics_size / 2 - top_bar_size / 2)
         top_bar_y = int(self.report_statistics_size / 2 - top_bar_size / 2)
-        text = f"MOSTLY {top_bar.emotion.upper()} - {self.get_emotion_percent(top_bar.emotion)}%"
+        text = f"YOU WERE MOSTLY  {top_bar.emotion.upper()} - {self.get_emotion_percent(top_bar.emotion)}%"
 
         y_offset = int(self.report_statistics_size * self.y_offset_percent)
-
         # place text with top emotion and percent
-        result_statistic = add_class_names_and_percents(
-            result_statistic, [top_bar_x, int(top_bar_y - y_offset / 2)], text,
-        )
-        # overlay bar on result statistic image
+        result_statistic = add_info(result_statistic,
+                                    [top_bar_x - top_bar_size // 4,
+                                     int(top_bar_y - y_offset)],
+                                    BACKGROUND_COLOR,
+                                    text,
+                                    WHITE_TEXT_COLOR)
+
+        # overlay top bar on result statistic image
+        top_bar_alpha_mask = top_bar.get_bar_alpha_mask
         result_statistic = overlay_image(
-            result_statistic, top_bar.bar, top_bar_x, top_bar_y, top_bar.alpha_mask,
+            result_statistic, top_bar.bar, top_bar_x, top_bar_y, top_bar_alpha_mask,
         )
 
         # calculate new relative bar parameters
@@ -254,6 +259,7 @@ class EmotionAnalyzer:
             result_emotion_size,
         ) = self._relative_size_estimation(self.report_statistics_size, bar_amount=4)
 
+        # calculate initial coordinates
         start_x, start_y = (
             np.clip(
                 self.report_statistics_size
@@ -280,14 +286,17 @@ class EmotionAnalyzer:
             )
             cur_bar.update(progress=cur_progress)
 
+            # place text with emotion and percent
             result_statistic = add_class_names_and_percents(
                 result_statistic,
-                [start_x, int(result_statistic.shape[0] - y_offset / 2)],
+                [start_x, int(result_statistic.shape[0] - y_offset)],
                 text,
             )
-            alpha_mask = cur_bar.alpha_mask
+
+            # overlay bar on result statistic image
+            bar_alpha_mask = cur_bar.get_bar_alpha_mask
             result_statistic = overlay_image(
-                result_statistic, cur_bar.bar, start_x, start_y, alpha_mask,
+                result_statistic, cur_bar.bar, start_x, start_y, bar_alpha_mask,
             )
             start_x = np.clip(
                 start_x - result_bar_size - result_bar_padding,
@@ -310,7 +319,6 @@ class EmotionBar:
         **kwargs,
     ) -> None:
         self._progress = progress
-        self._alpha_mask = np.ones((bar_size, bar_size, 3), dtype=np.uint8)
         self.bar = np.zeros((bar_size, bar_size, 3), dtype=np.uint8)
         self.emotion_image = np.array(Image.open(emotion_path).resize(emotion_size))
         self.bar_size = bar_size
@@ -337,12 +345,8 @@ class EmotionBar:
         self._progress = value
 
     @property
-    def alpha_mask(self):
-        return self._alpha_mask
-
-    @alpha_mask.setter
-    def alpha_mask(self, value):
-        self._alpha_mask = value
+    def get_bar_alpha_mask(self):
+        return np.all(self.bar, axis=2).astype(int)
 
     def update(self, progress: float = 0.0) -> None:
         self.progress = progress
@@ -377,18 +381,15 @@ class EmotionBar:
             color=(0, 0, 0),
             thickness=-1,
         )
-        alpha_mask = self.emotion_image[:, :, 3] / 255.0
-        overlay_emotion = self.emotion_image[:, :, :3][:, :, ::-1]
+        # place emotion
+        emotion_alpha_mask = self.emotion_image[:, :, 3] / 255.0
+        emotion_no_alpha = self.emotion_image[:, :, :3][:, :, ::-1]
         self.bar = overlay_image(
             self.bar,
-            overlay_emotion,
+            emotion_no_alpha,
             int(self.center[0] - self.emotion_image.shape[1] / 2),
             int(self.center[1] - self.emotion_image.shape[0] / 2),
-            alpha_mask,
+            emotion_alpha_mask,
         )
 
-        self._alpha_mask = (
-            ~(self.bar == np.zeros((self.bar_size, self.bar_size, 3), dtype=np.uint8))[
-                :, :, 0
-            ]
-        ).astype(int)
+

@@ -1,10 +1,11 @@
 import cv2
 import numpy as np
-from typing import List
+from typing import List, Union, Tuple
 from emotion_analyzer import EmotionAnalyzer
 from modelplace_api.objects import EmotionLabel
 from emotion_recognition_retail import InferenceModel
 from oak_inference_utils.inference import process_frame
+from time import time
 
 
 def resize_emotion_bboxes(img: np.ndarray, results: List[EmotionLabel], target_size: int) -> List[EmotionLabel]:
@@ -26,12 +27,14 @@ def process_cam(
     emotion_analyzer: EmotionAnalyzer,
     show: bool = True,
     visualization_size: int = 300,
-)-> List[np.ndarray]:
+    return_fps: bool = True
+) -> Union[List[np.ndarray], Tuple[List[np.ndarray], float]]:
     visualization_results = []
 
     # build camera object and add it to OAK pipeline
     model.add_cam_to_pipeline()
     proceed = True
+    start = time()
     while proceed:
         # get input shapes of emotion recognition model
         input_width, input_height = model.get_input_shapes()
@@ -62,5 +65,10 @@ def process_cam(
             if cv2.waitKey(1) == ord("q"):
                 cv2.destroyAllWindows()
                 proceed = False
+
+    elapsed_time = time() - start
+    if return_fps:
+        fps = round(len(visualization_results) / elapsed_time, 4)
+        return visualization_results, fps
 
     return visualization_results

@@ -21,18 +21,17 @@ def main():
 
     # build emotion analyzer object, which will aggregate model results and display up-to-date emotion bars
     emotion_analyzer = EmotionAnalyzer(visualization_size=args.visualization_size)
-
     # inference model and get visualization results with emotion bars
-    visualization_results = process_cam(
+    visualization_results, fps = process_cam(
         model,
         emotion_analyzer,
         show=args.visualize,
         visualization_size=args.visualization_size,
+        return_fps=True
     )
-
     # save result video
     if args.save_video:
-        save_video(visualization_results)
+        save_video(visualization_results, fps=fps)
 
     # create report with emotion bar statistic
     result_emotion_bar = emotion_analyzer.create_result_emotion_bar(

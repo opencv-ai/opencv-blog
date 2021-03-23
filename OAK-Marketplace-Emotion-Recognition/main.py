@@ -20,18 +20,11 @@ def main():
     model.model_load()  # Load weights
 
     # build emotion analyzer object, which will aggregate model results and display up-to-date emotion bars
-    emotion_analyzer = EmotionAnalyzer(visualization_size=args.visualization_size)
+    emotion_analyzer = EmotionAnalyzer(visualization_size=model.get_input_shapes()[0])
     # inference model and get visualization results with emotion bars
-    visualization_results, fps = process_cam(
-        model,
-        emotion_analyzer,
-        show=args.visualize,
-        visualization_size=args.visualization_size,
-        return_fps=True
+    original_images, results, fps = process_cam(
+        model, emotion_analyzer, show=args.visualize, return_fps=True,
     )
-    # save result video
-    if args.save_video:
-        save_video(visualization_results, fps=fps)
 
     # create report with emotion bar statistic
     result_emotion_bar = emotion_analyzer.create_result_emotion_bar(
@@ -46,6 +39,10 @@ def main():
     # show statistic
     result_emotion_bar.show()
     result_emotion_pie_chart.show()
+
+    # save result video
+    if args.save_video:
+        save_video(original_images, results, fps=fps, size=args.visualization_size)
 
 
 if __name__ == "__main__":

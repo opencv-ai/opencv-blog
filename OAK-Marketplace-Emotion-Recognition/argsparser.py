@@ -7,7 +7,7 @@ def parse_args():
         "--model-path", help="Path to Emotion Recognition model", type=str,
     )
     parser.add_argument(
-        "-visualize",
+        "--visualize",
         type=int,
         choices=[0, 1],
         help="If set to 1, visualize the results",
@@ -31,6 +31,6 @@ def parse_args():
         "--visualization-size",
         type=int,
         help="Visualization size (pixels)",
-        default=300,
+        default=720,
     )
     return parser.parse_args()

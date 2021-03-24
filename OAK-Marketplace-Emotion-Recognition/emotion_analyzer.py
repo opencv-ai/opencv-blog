@@ -11,6 +11,7 @@ from modelplace_api.objects import EmotionLabel
 from modelplace_api.visualization import add_info, draw_emotion_recognition_one_frame
 from PIL import Image
 from utils.visualization import add_class_names_and_percents, overlay_image
+from operator import getitem
 
 BACKGROUND_COLOR = (79, 79, 79, 1)
 WHITE_TEXT_COLOR = (255, 255, 255, 1)
@@ -285,7 +286,7 @@ class EmotionAnalyzer:
             ),
         )
 
-        for emotion, emotion_bar in self.bars.items():
+        for emotion, emotion_bar in sorted(self.bars.items(), key=lambda x: getitem(x[1], 'count')):
             if emotion == top_emotion:
                 continue
             percent = self.get_emotion_percent(emotion)

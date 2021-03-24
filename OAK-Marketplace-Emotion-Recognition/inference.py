@@ -1,6 +1,6 @@
 from time import time
 from typing import List, Tuple, Union
-
+from loguru import logger
 import cv2
 import numpy as np
 from emotion_analyzer import EmotionAnalyzer
@@ -29,7 +29,6 @@ def process_cam(
     model: InferenceModel,
     emotion_analyzer: EmotionAnalyzer,
     show: bool = True,
-    return_fps: bool = True,
 ) -> Union[
     Tuple[List[np.ndarray], List[np.ndarray]],
     Tuple[List[np.ndarray], List[np.ndarray], float],
@@ -42,7 +41,7 @@ def process_cam(
     proceed = True
     start = time()
     try:
-        print("Processing ...")
+        logger.info("Processing ...")
         while proceed:
             # get input shapes of emotion recognition model
             input_width, input_height = model.get_input_shapes()
@@ -74,11 +73,8 @@ def process_cam(
                     proceed = False
 
     except KeyboardInterrupt:
-        print("Interrupted!")
+        logger.info("Interrupted!")
 
     elapsed_time = time() - start
-    if return_fps:
-        fps = round(len(original_images) / elapsed_time, 4)
-        return original_images, results, fps
-
-    return original_images, results
+    fps = round(len(original_images) / elapsed_time, 4)
+    return original_images, results, fps

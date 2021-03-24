@@ -1,5 +1,5 @@
 from typing import List
-
+from loguru import logger
 import cv2
 import numpy as np
 import skvideo.io
@@ -25,7 +25,7 @@ def save_video(
         "-r": f"{fps}",
     }
 
-    print("Saving the video ...")
+    logger.info("Saving the video ...")
     writer = skvideo.io.FFmpegWriter(
         save_path, outputdict=output_dict, inputdict={"-r": f"{fps}"},
     )

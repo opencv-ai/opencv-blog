@@ -41,7 +41,7 @@ python main.py --model-path $PATH_TO_EMOTION_RECOGNITION_MODEL
 ```
 
 ```
-usage: main.py [-h] [--model-path MODEL_PATH] [-visualize {0,1}]
+usage: main.py [-h] [--model-path MODEL_PATH] [--visualize {0,1}]
                [--save-video {0,1}] [--save-statistics {0,1}]
                [--visualization-size VISUALIZATION_SIZE]
 
@@ -49,7 +49,7 @@ optional arguments:
   -h, --help            show this help message and exit
   --model-path MODEL_PATH
                         Path to Emotion Recognition model
-  -visualize {0,1}      If set to 1, visualize the results
+  --visualize {0,1}      If set to 1, visualize the results
   --save-video {0,1}    If set to 1, save the visualization results onto a MP4
                         video file
   --save-statistics {0,1}

@@ -30,7 +30,7 @@ def parse_args():
     parser.add_argument(
         "--visualization-size",
         type=int,
-        help="Visualization size (pixels)",
+        help="Saved video visualization size (pixels)",
         default=720,
     )
     return parser.parse_args()

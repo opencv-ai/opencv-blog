@@ -1,5 +1,6 @@
 from typing import List
 from loguru import logger
+
 import cv2
 import numpy as np
 import skvideo.io
@@ -9,7 +10,7 @@ from modelplace_api import EmotionLabel
 from tqdm import tqdm
 
 
-def save_video(
+def save_results_into_video(
     images: List[np.ndarray],
     results: List[EmotionLabel],
     fps: float,

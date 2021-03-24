@@ -3,7 +3,7 @@ from argsparser import parse_args
 from emotion_analyzer import EmotionAnalyzer
 from emotion_recognition_retail import InferenceModel
 from inference import process_cam
-from utils.utils import save_video
+from utils.utils import save_results_into_video
 
 
 def main():
@@ -37,7 +37,7 @@ def main():
 
     # save result video
     if args.save_video:
-        save_video(original_images, results, fps=fps, size=args.visualization_size)
+        save_results_into_video(original_images, results, fps=fps, size=args.visualization_size)
 
     # show statistic
     result_emotion_bar.show()

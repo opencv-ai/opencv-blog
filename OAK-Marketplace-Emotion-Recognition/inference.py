@@ -1,6 +1,7 @@
 from time import time
-from typing import List, Tuple, Union
+from typing import List, Tuple
 from loguru import logger
+
 import cv2
 import numpy as np
 from emotion_analyzer import EmotionAnalyzer
@@ -29,10 +30,7 @@ def process_cam(
     model: InferenceModel,
     emotion_analyzer: EmotionAnalyzer,
     show: bool = True,
-) -> Union[
-    Tuple[List[np.ndarray], List[np.ndarray]],
-    Tuple[List[np.ndarray], List[np.ndarray], float],
-]:
+) -> Tuple[List[np.ndarray], List[EmotionLabel], float]:
     original_images = []
     results = []
 

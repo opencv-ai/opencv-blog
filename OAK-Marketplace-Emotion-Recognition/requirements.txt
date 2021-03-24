@@ -1,8 +1,8 @@
 cython==0.29.6
+loguru==0.5.1
 matplotlib==3.2.1
 numpy==1.20.1
 opencv_python==4.5.1.48
 Pillow==7.1.2
 sk-video==1.1.10
 tqdm==4.59.0
-loguru==0.5.1

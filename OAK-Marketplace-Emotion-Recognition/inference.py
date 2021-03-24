@@ -1,19 +1,17 @@
 from time import time
 from typing import List, Tuple
-from loguru import logger
 
 import cv2
 import numpy as np
 from emotion_analyzer import EmotionAnalyzer
 from emotion_recognition_retail import InferenceModel
+from loguru import logger
 from modelplace_api.objects import EmotionLabel
 from oak_inference_utils.inference import process_frame
 
 
 def process_cam(
-    model: InferenceModel,
-    emotion_analyzer: EmotionAnalyzer,
-    show: bool = True,
+    model: InferenceModel, emotion_analyzer: EmotionAnalyzer, show: bool = True,
 ) -> Tuple[List[np.ndarray], List[EmotionLabel], float]:
     # build camera object and add it to OAK pipeline
     model.add_cam_to_pipeline()

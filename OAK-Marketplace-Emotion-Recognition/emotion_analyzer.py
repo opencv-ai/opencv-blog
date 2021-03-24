@@ -1,16 +1,16 @@
 import json
 import operator
 import os
+from typing import List, Tuple
 
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+from loguru import logger
 from modelplace_api.objects import EmotionLabel
 from modelplace_api.visualization import add_info, draw_emotion_recognition_one_frame
 from PIL import Image
 from utils.visualization import add_class_names_and_percents, overlay_image
-from loguru import logger
-from typing import List, Tuple
 
 BACKGROUND_COLOR = (79, 79, 79, 1)
 WHITE_TEXT_COLOR = (255, 255, 255, 1)
@@ -274,9 +274,7 @@ class EmotionAnalyzer:
         # calculate initial coordinates
         start_x, start_y = (
             np.clip(
-                self.report_statistics_size
-                - result_bar_size
-                - result_bar_padding // 2,
+                self.report_statistics_size - result_bar_size - result_bar_padding // 2,
                 0,
                 self.report_statistics_size,
             ),

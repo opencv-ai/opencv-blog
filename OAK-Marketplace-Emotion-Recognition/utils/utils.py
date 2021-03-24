@@ -1,12 +1,13 @@
 from typing import List
-from loguru import logger
 
 import cv2
 import numpy as np
 import skvideo.io
 from emotion_analyzer import EmotionAnalyzer
+from loguru import logger
 from modelplace_api import EmotionLabel
 from tqdm import tqdm
+
 from .visualization import resize_emotion_bboxes
 
 

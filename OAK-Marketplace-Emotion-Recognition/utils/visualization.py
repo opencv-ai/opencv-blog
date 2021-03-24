@@ -1,7 +1,8 @@
-import numpy as np
-from modelplace_api.visualization import MONTSERATT_BOLD_TTF_PATH
-from modelplace_api.objects import EmotionLabel
 from typing import List
+
+import numpy as np
+from modelplace_api.objects import EmotionLabel
+from modelplace_api.visualization import MONTSERATT_BOLD_TTF_PATH
 from PIL import Image, ImageDraw, ImageFont
 
 INFO_TEXT_SIZE = 12

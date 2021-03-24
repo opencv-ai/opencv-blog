@@ -1,4 +1,5 @@
 import os.path as osp
+
 from argsparser import parse_args
 from emotion_analyzer import EmotionAnalyzer
 from emotion_recognition_retail import InferenceModel
@@ -23,7 +24,7 @@ def main():
     emotion_analyzer = EmotionAnalyzer(visualization_size=model.get_input_shapes()[0])
     # run inference
     original_images, results, fps = process_cam(
-        model, emotion_analyzer, show=args.visualize
+        model, emotion_analyzer, show=args.visualize,
     )
 
     # create report with emotion bar statistics
@@ -37,7 +38,9 @@ def main():
 
     # save result video
     if args.save_video:
-        save_results_into_video(original_images, results, fps=fps, size=args.visualization_size)
+        save_results_into_video(
+            original_images, results, fps=fps, size=args.visualization_size,
+        )
 
     # show statistics
     result_emotion_bar.show()

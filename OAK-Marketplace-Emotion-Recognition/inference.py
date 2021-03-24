@@ -8,7 +8,6 @@ from emotion_analyzer import EmotionAnalyzer
 from emotion_recognition_retail import InferenceModel
 from modelplace_api.objects import EmotionLabel
 from oak_inference_utils.inference import process_frame
-from utils.visualization import resize_emotion_bboxes
 
 
 def process_cam(
@@ -16,15 +15,17 @@ def process_cam(
     emotion_analyzer: EmotionAnalyzer,
     show: bool = True,
 ) -> Tuple[List[np.ndarray], List[EmotionLabel], float]:
+    # build camera object and add it to OAK pipeline
+    model.add_cam_to_pipeline()
+
     original_images = []
     results = []
 
-    # build camera object and add it to OAK pipeline
-    model.add_cam_to_pipeline()
-    proceed = True
     start = time()
+    proceed = True
+
     try:
-        logger.info("Processing ...")
+        logger.info("Processing stream from OAK ... Press Ctrl-C to terminate!")
         while proceed:
             # get input shapes of emotion recognition model
             input_width, input_height = model.get_input_shapes()

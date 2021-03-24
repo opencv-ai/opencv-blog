@@ -8,6 +8,7 @@ from utils.utils import save_results_into_video
 
 def main():
     args = parse_args()
+
     model_path = osp.join(
         args.model_path, "checkpoint",
     )  # Path to emotion recognition checkpoint
@@ -15,21 +16,20 @@ def main():
     # build model
     model = InferenceModel(
         model_path=model_path,
-    )  # Initialize the emotion recognition model
-    model.model_load()  # Load weights
+    )  # initialize the emotion recognition model
+    model.model_load()  # load weights
 
     # build emotion analyzer object, which will aggregate model results and display up-to-date emotion bars
     emotion_analyzer = EmotionAnalyzer(visualization_size=model.get_input_shapes()[0])
-    # inference model and get visualization results with emotion bars
+    # run inference
     original_images, results, fps = process_cam(
         model, emotion_analyzer, show=args.visualize
     )
 
-    # create report with emotion bar statistic
+    # create report with emotion bar statistics
     result_emotion_bar = emotion_analyzer.create_result_emotion_bar(
         save=args.save_statistics,
     )
-
     # create report emotion pie chart
     result_emotion_pie_chart = emotion_analyzer.create_statistics_pie_chart(
         save=args.save_statistics,
@@ -39,7 +39,7 @@ def main():
     if args.save_video:
         save_results_into_video(original_images, results, fps=fps, size=args.visualization_size)
 
-    # show statistic
+    # show statistics
     result_emotion_bar.show()
     result_emotion_pie_chart.show()
 

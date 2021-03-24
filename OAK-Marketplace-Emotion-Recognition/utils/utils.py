@@ -5,9 +5,9 @@ import cv2
 import numpy as np
 import skvideo.io
 from emotion_analyzer import EmotionAnalyzer
-from inference import resize_emotion_bboxes
 from modelplace_api import EmotionLabel
 from tqdm import tqdm
+from .visualization import resize_emotion_bboxes
 
 
 def save_results_into_video(
@@ -37,3 +37,5 @@ def save_results_into_video(
         frame = emotion_analyzer.draw(frame, ret)
         writer.writeFrame(frame[:, :, ::-1])
     writer.close()
+
+    logger.info(f"Saved as {save_path}")

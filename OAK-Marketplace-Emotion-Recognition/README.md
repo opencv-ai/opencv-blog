@@ -1,8 +1,8 @@
-This contains the code for **Emotion Recognition using OpenCV AI KIT and Modelplace**. For more information - visit [OpenCV.AI](https://www.opencv.ai/).
+This contains the code for **Emotion Recognition using OpenCV AI KIT and Modelplace**. For more information - visit [OpenCV.AI](https://opencv.ai/post/emotional-recognition).
 
 # OAK Emotion Recognition
 
-![](images/usage_example.gif)
+![](images/demo.gif)
 
 ## Requirements
 
@@ -54,5 +54,5 @@ optional arguments:
                         video file
   --save-statistics {0,1}
                         If set to 1, save the statistics onto a PNG image file
-  --visualization-size Visualization size (pixels)
+  --visualization-size Saved video visualization size (pixels)
 ```

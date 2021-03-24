@@ -1,5 +1,7 @@
 import numpy as np
 from modelplace_api.visualization import MONTSERATT_BOLD_TTF_PATH
+from modelplace_api.objects import EmotionLabel
+from typing import List
 from PIL import Image, ImageDraw, ImageFont
 
 INFO_TEXT_SIZE = 12
@@ -7,6 +9,22 @@ NORM_HEIGHT = 591
 TEXT_OFFSET_X = 16
 TEXT_OFFSET_Y = 8
 WHITE_TEXT_COLOR = (255, 255, 255, 1)
+
+
+def resize_emotion_bboxes(
+    img: np.ndarray, results: List[EmotionLabel], target_size: int,
+) -> List[EmotionLabel]:
+    img_h, img_w, _ = img.shape
+    if img_h / img_w < target_size / target_size:
+        scale = img_h / target_size
+    else:
+        scale = img_w / target_size
+    for ret in results:
+        ret.bbox.x1 = int(ret.bbox.x1 / scale)
+        ret.bbox.x2 = int(ret.bbox.x2 / scale)
+        ret.bbox.y1 = int(ret.bbox.y1 / scale)
+        ret.bbox.y2 = int(ret.bbox.y2 / scale)
+    return results
 
 
 def add_class_names_and_percents(image, coords: list, text: str) -> np.ndarray:

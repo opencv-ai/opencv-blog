@@ -112,8 +112,9 @@ class EmotionAnalyzer:
         y_offset = int(vis_result.shape[1] * self.y_offset_percent)
         alpha_mask_overlay = self.overlay[:, :, 3] / 255.0
         overlay_background = self.overlay[..., :3]
+        left_top_x, left_top_y = 0, 0
         vis_result = overlay_image(
-            vis_result, overlay_background, 0, 0, alpha_mask_overlay,
+            vis_result, overlay_background, left_top_x, left_top_y, alpha_mask_overlay,
         )
         start_x, start_y = (
             np.clip(
@@ -268,7 +269,7 @@ class EmotionAnalyzer:
             np.clip(
                 self.report_statistics_size
                 - result_bar_size
-                - int(result_bar_padding / 2),
+                - result_bar_padding // 2,
                 0,
                 self.report_statistics_size,
             ),
@@ -356,7 +357,7 @@ class EmotionBar:
         return np.all(self.bar, axis=2).astype(int)
 
     def update(self, progress: float = 0.0) -> None:
-        self.progress = progress
+        self._progress = progress
         diff = (self.end_angle - self.start_angle) * progress
         self.bar = cv2.ellipse(
             self.bar,

@@ -8,22 +8,7 @@ from emotion_analyzer import EmotionAnalyzer
 from emotion_recognition_retail import InferenceModel
 from modelplace_api.objects import EmotionLabel
 from oak_inference_utils.inference import process_frame
-
-
-def resize_emotion_bboxes(
-    img: np.ndarray, results: List[EmotionLabel], target_size: int,
-) -> List[EmotionLabel]:
-    img_h, img_w, _ = img.shape
-    if img_h / img_w < target_size / target_size:
-        scale = img_h / target_size
-    else:
-        scale = img_w / target_size
-    for ret in results:
-        ret.bbox.x1 = int(ret.bbox.x1 / scale)
-        ret.bbox.x2 = int(ret.bbox.x2 / scale)
-        ret.bbox.y1 = int(ret.bbox.y1 / scale)
-        ret.bbox.y2 = int(ret.bbox.y2 / scale)
-    return results
+from utils.visualization import resize_emotion_bboxes
 
 
 def process_cam(

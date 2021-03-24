@@ -1,14 +1,18 @@
+from time import time
+from typing import List, Tuple
+from loguru import logger
+
 import cv2
 import numpy as np
-from typing import List, Union, Tuple
 from emotion_analyzer import EmotionAnalyzer
-from modelplace_api.objects import EmotionLabel
 from emotion_recognition_retail import InferenceModel
+from modelplace_api.objects import EmotionLabel
 from oak_inference_utils.inference import process_frame
-from time import time
 
 
-def resize_emotion_bboxes(img: np.ndarray, results: List[EmotionLabel], target_size: int) -> List[EmotionLabel]:
+def resize_emotion_bboxes(
+    img: np.ndarray, results: List[EmotionLabel], target_size: int,
+) -> List[EmotionLabel]:
     img_h, img_w, _ = img.shape
     if img_h / img_w < target_size / target_size:
         scale = img_h / target_size
@@ -26,49 +30,49 @@ def process_cam(
     model: InferenceModel,
     emotion_analyzer: EmotionAnalyzer,
     show: bool = True,
-    visualization_size: int = 300,
-    return_fps: bool = True
-) -> Union[List[np.ndarray], Tuple[List[np.ndarray], float]]:
-    visualization_results = []
+) -> Tuple[List[np.ndarray], List[EmotionLabel], float]:
+    original_images = []
+    results = []
 
     # build camera object and add it to OAK pipeline
     model.add_cam_to_pipeline()
     proceed = True
     start = time()
-    while proceed:
-        # get input shapes of emotion recognition model
-        input_width, input_height = model.get_input_shapes()
+    try:
+        logger.info("Processing ...")
+        while proceed:
+            # get input shapes of emotion recognition model
+            input_width, input_height = model.get_input_shapes()
 
-        # grab frame from camera and reshape it into model input shapes
-        image = np.ascontiguousarray(
-            model.get_frame_from_camera()
-            .reshape((3, input_height, input_width))
-            .transpose(1, 2, 0),
-        )
+            # grab frame from camera and reshape it into model input shapes
+            image = np.ascontiguousarray(
+                model.get_frame_from_camera()
+                .reshape((3, input_height, input_width))
+                .transpose(1, 2, 0),
+            )
 
-        # model inference
-        ret, proceed = process_frame(image, model, visualization_func=None)
+            # model inference
+            ret, proceed = process_frame(image, model, visualization_func=None)
 
-        # resize image and model inference results
-        if visualization_size != input_width:
-            if ret:
-                ret = resize_emotion_bboxes(image, ret, visualization_size)
-            image = cv2.resize(image, (visualization_size, visualization_size))
+            # save original images and inference results
+            original_images.append(image)
+            results.append(ret)
 
-        # update emotion statistic and visualize it using emotion bar
-        vis_result = emotion_analyzer.draw(image, ret)
-        visualization_results.append(vis_result)
+            # update emotion statistics
+            emotion_analyzer.update_bars(ret)
 
-        # show processed image
-        if show:
-            cv2.imshow("result", vis_result)
-            if cv2.waitKey(1) == ord("q"):
-                cv2.destroyAllWindows()
-                proceed = False
+            # show processed image
+            if show:
+                # visualize bars
+                vis_result = emotion_analyzer.draw(image, ret)
+                cv2.imshow("result", vis_result)
+                if cv2.waitKey(1) == ord("q"):
+                    cv2.destroyAllWindows()
+                    proceed = False
+
+    except KeyboardInterrupt:
+        logger.info("Interrupted!")
 
     elapsed_time = time() - start
-    if return_fps:
-        fps = round(len(visualization_results) / elapsed_time, 4)
-        return visualization_results, fps
-
-    return visualization_results
+    fps = round(len(original_images) / elapsed_time, 4)
+    return original_images, results, fps

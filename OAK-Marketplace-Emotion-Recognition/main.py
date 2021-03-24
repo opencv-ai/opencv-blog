@@ -1,10 +1,9 @@
 import os.path as osp
-
 from argsparser import parse_args
 from emotion_analyzer import EmotionAnalyzer
 from emotion_recognition_retail import InferenceModel
 from inference import process_cam
-from utils.utils import save_video
+from utils.utils import save_results_into_video
 
 
 def main():
@@ -20,18 +19,11 @@ def main():
     model.model_load()  # Load weights
 
     # build emotion analyzer object, which will aggregate model results and display up-to-date emotion bars
-    emotion_analyzer = EmotionAnalyzer(visualization_size=args.visualization_size)
+    emotion_analyzer = EmotionAnalyzer(visualization_size=model.get_input_shapes()[0])
     # inference model and get visualization results with emotion bars
-    visualization_results, fps = process_cam(
-        model,
-        emotion_analyzer,
-        show=args.visualize,
-        visualization_size=args.visualization_size,
-        return_fps=True
+    original_images, results, fps = process_cam(
+        model, emotion_analyzer, show=args.visualize
     )
-    # save result video
-    if args.save_video:
-        save_video(visualization_results, fps=fps)
 
     # create report with emotion bar statistic
     result_emotion_bar = emotion_analyzer.create_result_emotion_bar(
@@ -42,6 +34,10 @@ def main():
     result_emotion_pie_chart = emotion_analyzer.create_statistics_pie_chart(
         save=args.save_statistics,
     )
+
+    # save result video
+    if args.save_video:
+        save_results_into_video(original_images, results, fps=fps, size=args.visualization_size)
 
     # show statistic
     result_emotion_bar.show()

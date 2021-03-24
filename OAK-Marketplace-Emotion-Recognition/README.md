@@ -9,7 +9,7 @@ This contains the code for **Emotion Recognition using OpenCV AI KIT and Modelpl
 - Install Python 3.7 or higher and run: `python3 -m pip install -r requirements.txt`
 
 - Install [Emotion Recognition OAK model](https://github.com/opencv-ai/opencv-blog/tree/main/OAK-Marketplace-Emotion-Recognition#installation-of-emotion-recognition-oak-package)
-  
+
 - Install [FFmpeg](https://ffmpeg.org/download.html)
 
 ## Installation of Emotion Recognition OAK package:

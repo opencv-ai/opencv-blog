@@ -1,7 +1,5 @@
 import numpy as np
-from modelplace_api.visualization import (
-    MONTSERATT_BOLD_TTF_PATH,
-)
+from modelplace_api.visualization import MONTSERATT_BOLD_TTF_PATH
 from PIL import Image, ImageDraw, ImageFont
 
 INFO_TEXT_SIZE = 12
@@ -28,7 +26,9 @@ def add_class_names_and_percents(image, coords: list, text: str) -> np.ndarray:
     return np.array(pil_img)
 
 
-def overlay_image(img, img_overlay: np.ndarray, x: int, y: int, alpha_mask: np.ndarray = None) -> np.ndarray:
+def overlay_image(
+    img, img_overlay: np.ndarray, x: int, y: int, alpha_mask: np.ndarray = None,
+) -> np.ndarray:
     source_image = img.copy()
     y1, y2 = max(0, y), min(img.shape[0], y + img_overlay.shape[0])
     x1, x2 = max(0, x), min(img.shape[1], x + img_overlay.shape[1])

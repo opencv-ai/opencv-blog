@@ -15,7 +15,7 @@ def save_results_into_video(
     images: List[np.ndarray],
     results: List[EmotionLabel],
     fps: float,
-    size: int = 1080,
+    size: int = 720,
     save_path: str = "inference_results.mp4",
 ) -> None:
     # resize image and model inference results

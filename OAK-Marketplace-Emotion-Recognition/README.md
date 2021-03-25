@@ -1,4 +1,4 @@
-This contains the code for **Emotion Recognition using OpenCV AI KIT and Modelplace**. For more information - visit [OpenCV.AI](https://opencv.ai/post/emotional-recognition).
+This contains the code for **Emotion Recognition using OpenCV AI KIT and Modelplace**. For more information - visit [OpenCV.AI](https://opencv.ai/post/emotion-recognition).
 
 # OAK Emotion Recognition
 

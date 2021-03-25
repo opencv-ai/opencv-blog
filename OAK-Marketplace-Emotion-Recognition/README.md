@@ -16,7 +16,7 @@ This contains the code for **Emotion Recognition using OpenCV AI KIT and Modelpl
 
 1. Clone the [repository](https://github.com/opencv-ai/oak-model-samples) with OAK model samples by the following command:
 
-   ```bash
+    ```bash
     git clone https://github.com/opencv-ai/oak-model-samples.git && \
     cd oak-model-samples && \
     git checkout 54fa4fe8bd2bb42d6bae49213dbbe6b2f1ce5c5e

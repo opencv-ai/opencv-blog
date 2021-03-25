@@ -28,7 +28,7 @@ This contains the code for **Emotion Recognition using OpenCV AI KIT and Modelpl
 
    2.2 `export PATH_TO_EMOTION_RECOGNITION_MODEL=$(pwd)`
 
-   2.3 `python3 setup.py bdist_wheel && rm -R build/ *.egg-info`
+   2.3 `pip3 install wheel && python3 setup.py bdist_wheel && rm -R build/ *.egg-info`
 
    2.4 `pip3 install dist/*.whl -f https://artifacts.luxonis.com/artifactory/luxonis-python-snapshot-local/depthai/ && rm -R dist/`
 

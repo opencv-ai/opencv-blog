@@ -2,7 +2,7 @@ This contains the code for **Using OpenCV AI Kit with Modelplace.ai To Create Re
 
 # OAK Emotion Recognition
 
-![](images/usage_demo.gif)
+![](images/demo.gif)
 
 ## Requirements
 

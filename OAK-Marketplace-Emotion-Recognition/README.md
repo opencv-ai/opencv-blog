@@ -55,3 +55,24 @@ optional arguments:
                         If set to 1, save the statistics onto a PNG image file
   --visualization-size Saved video visualization size (pixels)
 ```
+
+## Troubleshooting
+
+<details>
+  <summary>RuntimeError: Failed to find device after booting, error message: X_LINK_DEVICE_NOT_FOUND</summary>
+  
+  <p>
+  
+  If while running the app, you get an error:
+  
+  `Failed to find device after booting, error message: X_LINK_DEVICE_NOT_FOUND`  
+  
+  Please, run the following command:
+
+```bash
+echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="03e7", MODE="0666"' | \ 
+sudo tee /etc/udev/rules.d/80-movidius.rules && \
+sudo udevadm control --reload-rules
+```
+  
+</details>

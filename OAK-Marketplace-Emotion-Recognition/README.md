@@ -67,12 +67,13 @@ optional arguments:
   
   `Failed to find device after booting, error message: X_LINK_DEVICE_NOT_FOUND`  
   
-  Please, run the following command:
-
-```bash
-echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="03e7", MODE="0666"' | \
-sudo tee /etc/udev/rules.d/80-movidius.rules && \
-sudo udevadm control --reload-rules
-```
+  1. Run the following command:
+     
+        ```bash
+        echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="03e7", MODE="0666"' | \
+        sudo tee /etc/udev/rules.d/80-movidius.rules && \
+        sudo udevadm control --reload-rules
+        ```
+  2. Unplug and replug an OAK
   
 </details>

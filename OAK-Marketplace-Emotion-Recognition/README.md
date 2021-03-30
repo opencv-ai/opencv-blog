@@ -59,7 +59,7 @@ optional arguments:
 ## Troubleshooting
 
 <details>
-  <summary>RuntimeError: Failed to find device after booting, error message: X_LINK_DEVICE_NOT_FOUND</summary>
+  <summary><b>RuntimeError</b>: Failed to find device after booting, error message: <b>X_LINK_DEVICE_NOT_FOUND</b></summary>
   
   <p>
   

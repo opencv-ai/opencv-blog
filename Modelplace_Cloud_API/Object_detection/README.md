@@ -2,7 +2,11 @@
 
 In this block, using the example of the [Faster R-CNN detector], we will describe in detail the steps of model integration into the Python application using [Modelplace Cloud API]. 
 
-To easily follow along with this tutorial, please download the [full code] and a [test image].
+To easily follow along with this tutorial, please download the [full code] and a [test image] and put these files in the same folder. To run the script, run the command: 
+``` bash
+python object_detection.py 
+```
+
 
 ## Step 1: Import the required libraries and set default parameters
 ``` python
@@ -117,6 +121,10 @@ If the program runs successfully, it should have a prediction folder that contai
 * visualization.png  
 
 You can see an example of the content of these files on the [Faster R-CNN] by running "test model" using the [test image]. 
+
+<p align="center">
+    <img src="https://drive.google.com/uc?export=view&id=1oRsv1BII2SRgN6Rl8pq7sqdwAqb_FIz8" height="300"/>
+</p>
 
 ## Step 6: Drawing the results on your machine
 For quick rendering you can use the out-of-the-box methods of the modelplace-api library. To install it, run the following command in the terminal: 

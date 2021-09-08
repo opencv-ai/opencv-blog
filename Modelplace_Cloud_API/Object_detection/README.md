@@ -171,7 +171,12 @@ Check your root folder.
 If the program runs successfully, it should have a prediction folder that contains: 
 * prediction.json 
 * visualization.png 
-* my_visualization.png  
+* my_visualization.png   
+
+
+## Troubleshooting
+If you get any troubles working with Modelplace Cloud API, please, contact us at modelplace@opencv.ai
+
 
 
 [Faster R-CNN]: https://modelplace.ai/models/2

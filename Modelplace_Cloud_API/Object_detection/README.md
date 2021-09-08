@@ -18,14 +18,15 @@ if not os.path.exists(prediction_dir):
     os.makedirs(prediction_dir)
 ```
 
-## Step 2: Get an access token  using /login method
-### 2.1 Set your email and password
+## Step 2: Get an access token  using **/login** method
+### 2.1 Set your email and password from your [Modelplace.AI] account
 ``` python 
 user_info = json.dumps({
    'email': 'YOUR_EMAIL',
    'password': 'YOUR_PASSWORD'
 })
 ```
+
 ### 2.2 Make a request and check the return status
 ``` python
 response = requests.post(api+"/login", data=user_info)
@@ -36,26 +37,26 @@ else:
     raise RuntimeError(response.status_code, response.text)
 ```
 
-If successful, /login returns an access_token, which is necessary for further work with the protected API methods 
+If successful, **/login** returns an *access_token*, which is necessary for further work with the protected API methods 
 
-### 2.3 Set your access_token for accessing protected API methods
+### 2.3 Set your *access_token* for accessing protected API methods
 ``` python
 headers = {'Authorization': 'Bearer ' + login_data['access_token']}
 ```
 
-## Step 3: Run the model inference using /process method
+## Step 3: Run the model inference using **/process** method
 ### 3.1 Set the model_id  
 ``` python
 params = (('model_id', '2'),)
 ```
-To determine the model_id open it in [Modelplace.AI] and copy the last number in the address bar: https://modelplace.ai/models/<model_id>
+To determine the *model_id* open model in [Modelplace.AI] and copy the last number in the address bar: https://modelplace.ai/models/<model_id>
 
-<img src="https://drive.google.com/uc?export=view&id=<1GoSVDnTs4arBNsOaAXhQ-qRshj6lUWwk>" height="140"/>
+<p align="center">
+    <img src="https://drive.google.com/uc?export=view&id=1GoSVDnTs4arBNsOaAXhQ-qRshj6lUWwk" height="300"/>
 </p>
 
-### 3.2 Load an image, run the model inference and check the response code (status code) using /process method
+### 3.2 Load an image, run the model inference and check the return status 
 ``` python
-params = (('model_id', '2'),)
 with open(image_path, "rb") as image:
     files = {"upload_data": ("example.png", image)}
     response = requests.post(api + '/process', headers=headers, params=params, files=files)
@@ -65,10 +66,12 @@ if response.status_code == 201:
 else:
    raise RuntimeError(response.status_code, response.text)
 ```
-If successful, /process returns task_id, which identifies the task created in the cloud.
+If successful, **/process** returns *task_id*, which identifies the task created in the cloud.
 
 ## Step 4: Get the result of the model using /task method
-### 4.1 Set the task_id in the query parameters
+### 4.1 Set the task_id in the query parameters. 
+Set *true* value for 'visualize' to get a built-in  visualization of how the model performs.
+
 ``` python
 params = ( 
     ('task_id', process_data['task_id']),
@@ -77,7 +80,7 @@ params = (
 ```
 
 ### 4.2 Wait until the model's execution state is "finished"
-See Task status for a full description of the model's execution states
+See [Modelplace Cloud API] docs for a full description of the model's execution states
 ``` python
 from tqdm import tqdm
 import time
@@ -96,7 +99,7 @@ with tqdm(desc='Prediction is made') as progress_bar:
 print('Prediction received')
 ```
 
-## Step 5: Save the result 
+## Step 5: Save the results
 ``` python
 prediction_path = os.path.join(prediction_dir, 'prediction.json')
 visualization_path = os.path.join(prediction_dir, 'visualization.gif')
@@ -107,8 +110,14 @@ with open(visualization_path, 'wb') as f:
    f.write(requests.get(result_data['visualization']).content)
    print(f'Save {visualization_path}')
 ```
+Check your root folder.  
+If the program runs successfully, it should have a prediction folder that contains: 
+* prediction.json
+* visualization.png  
 
-## Step 6: Drawing the results
+You can see an example of the content of these files on the [Faster R-CNN] by running "test model" using the [test image]. 
+
+## Step 6: Drawing the results on your machine
 For quick rendering you can use the out-of-the-box methods of the modelplace-api library. To install it, run the following command in the terminal: 
 ``` bash
 рip install modelplace-api@https://github.com/opencv-ai/modelplace-api/archive/v0.4.15.zip
@@ -148,14 +157,15 @@ my_visualization_path = os.path.join(prediction_dir, 'my_visualization.png')
 cv2.imwrite(my_visualization_path, img)
 print(f'Save {my_visualization_path}') 
 ```
-## Summarize 
+
 Check your root folder.  
 If the program runs successfully, it should have a prediction folder that contains: 
-* prediction.json - 
-* visualization.png - 
-* my_visualization.png - 
+* prediction.json 
+* visualization.png 
+* my_visualization.png  
 
 
+[Faster R-CNN]: https://modelplace.ai/models/2
 [Faster R-CNN detector]: https://modelplace.ai/models/2
 [Modelplace Cloud API]: https://modelplace.ai/blog/
 [full code]: object_detection.py

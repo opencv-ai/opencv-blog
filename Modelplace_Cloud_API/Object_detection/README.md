@@ -50,7 +50,8 @@ params = (('model_id', '2'),)
 ```
 To determine the model_id open it in [Modelplace.AI] and copy the last number in the address bar: https://modelplace.ai/models/<model_id>
 
-<img src="https://drive.google.com/uc?export=view&id=<1GoSVDnTs4arBNsOaAXhQ-qRshj6lUWwk>" height="140"/>
+<img 
+     src="https://drive.google.com/uc?export=view&id=1GoSVDnTs4arBNsOaAXhQ-qRshj6lUWwk" height="140"/>
 </p>
 
 ### 3.2 Load an image, run the model inference and check the response code (status code) using /process method

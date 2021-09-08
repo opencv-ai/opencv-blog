@@ -51,8 +51,13 @@ params = (('model_id', '2'),)
 ```
 To determine the *model_id* open model in [Modelplace.AI] and copy the last number in the address bar: https://modelplace.ai/models/<model_id>
 
+<<<<<<< HEAD
 <p align="center">
     <img src="https://drive.google.com/uc?export=view&id=1GoSVDnTs4arBNsOaAXhQ-qRshj6lUWwk" height="300"/>
+=======
+<img 
+     src="https://drive.google.com/uc?export=view&id=1GoSVDnTs4arBNsOaAXhQ-qRshj6lUWwk" height="140"/>
+>>>>>>> 18ca17cfb206e196e7d9aff3087e1c4f04f50db8
 </p>
 
 ### 3.2 Load an image, run the model inference and check the return status 

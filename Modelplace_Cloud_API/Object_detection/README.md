@@ -2,7 +2,8 @@
 
 In this block, using the example of the [Faster R-CNN detector], we will describe in detail the steps of model integration into the Python application using [Modelplace Cloud API]. 
 
-To easily follow along with this tutorial, please download the [full code] and a [test image] and put these files in the same folder. To run the script, run the command: 
+To easily follow along with this tutorial, please download the [full code] and a [test image] and put these files in the same folder.   
+To run the script, run the command: 
 ``` bash
 python object_detection.py 
 ```
@@ -85,7 +86,6 @@ params = (
 ```
 
 ### 4.2 Wait until the model's execution state is "finished"
-See [Modelplace Cloud API] docs for a full description of the model's execution states
 ``` python
 from tqdm import tqdm
 import time
@@ -103,6 +103,7 @@ with tqdm(desc='Prediction is made') as progress_bar:
             raise RuntimeError(response.status_code, response.text)
 print('Prediction received')
 ```
+See [Modelplace Cloud API] docs for a full description of the model's execution states
 
 ## Step 5: Save the results
 ``` python
@@ -116,9 +117,9 @@ with open(visualization_path, 'wb') as f:
    print(f'Save {visualization_path}')
 ```
 Check your root folder.  
-If the program runs successfully, it should have a prediction folder that contains: 
+If the program runs successfully, it should have a *prediction* folder that contains: 
 * prediction.json
-* visualization.png  
+* visualization.gif  
 
 You can see an example of the content of these files on the [Faster R-CNN] by running "test model" using the [test image]. 
 
@@ -127,7 +128,7 @@ You can see an example of the content of these files on the [Faster R-CNN] by ru
 </p>
 
 ## Step 6: Drawing the results on your machine
-For quick rendering you can use the out-of-the-box methods of the modelplace-api library. To install it, run the following command in the terminal: 
+For quick rendering you can use the out-of-the-box methods of the [modelplace-api] library. To install it, run the following command in the terminal: 
 ``` bash
 рip install modelplace-api@https://github.com/opencv-ai/modelplace-api/archive/v0.4.15.zip
 ```
@@ -168,9 +169,9 @@ print(f'Save {my_visualization_path}')
 ```
 
 Check your root folder.  
-If the program runs successfully, it should have a prediction folder that contains: 
+If the program runs successfully, it should have a *prediction* folder that contains: 
 * prediction.json 
-* visualization.png 
+* visualization.gif
 * my_visualization.png   
 
 
@@ -185,3 +186,4 @@ If you get any troubles working with Modelplace Cloud API, please, contact us at
 [full code]: object_detection.py
 [test image]: example.png
 [Modelplace.AI]:https://modelplace.ai/models
+[modelplace-api]:https://github.com/opencv-ai/modelplace-api

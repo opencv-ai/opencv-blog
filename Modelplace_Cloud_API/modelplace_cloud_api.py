@@ -1,5 +1,4 @@
 from loguru import logger
-from tqdm import tqdm
 import time
 
 from api_requests import login_request, process_request, task_request 
@@ -54,4 +53,3 @@ if __name__ == "__main__":
         file_type=prediction_data['visualization_type']
     )
     logger.info(f'The prediction is saved in the \"{args.save_folder}\" folder')
-    

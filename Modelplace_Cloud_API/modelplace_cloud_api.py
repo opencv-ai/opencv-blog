@@ -54,3 +54,4 @@ if __name__ == "__main__":
         file_type=prediction_data['visualization_type']
     )
     logger.info(f'The prediction is saved in the \"{args.save_folder}\" folder')
+    

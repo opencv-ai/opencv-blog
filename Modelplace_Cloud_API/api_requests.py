@@ -38,3 +38,4 @@ def task_request(access_token: str, task_id: int) -> json:
     if response.status_code != 200:
         raise RuntimeError(response.status_code, response.text)
     return response.json()
+    

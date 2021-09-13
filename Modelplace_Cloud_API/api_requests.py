@@ -1,22 +1,25 @@
 import requests
 import json
+import os
 
 
-def login_request(email: str, password:str) -> json:
+API = 'https://api.modelplace.ai/v3'
+
+
+def login(email: str, password:str) -> json:
     response = requests.post(
-        url="https://api.modelplace.ai/v3/login", 
+        url=os.path.join(API, 'login'), 
         data=json.dumps({ 'email': email, 'password': password })
     )
     if response.status_code != 200:
         raise RuntimeError(response.status_code, response.text)
     return response.json()
 
-
-def process_request(access_token: str, model_id: int, data_path: str) -> json:
-    with open(data_path, "rb") as file:
-        file_name = data_path.split('/')[-1]
+def process(model_id: int, input_file: str, access_token: str) -> json:
+    with open(input_file, 'rb') as file:
+        file_name = input_file.split('/')[-1]
         response = requests.post(
-                url='https://api.modelplace.ai/v3/process', 
+                url=os.path.join(API, 'process'), 
                 headers={'Authorization': 'Bearer ' + access_token},    
                 params=(('model_id', str(model_id)), ),
                 files={'upload_data': (file_name, file)},
@@ -25,10 +28,9 @@ def process_request(access_token: str, model_id: int, data_path: str) -> json:
             raise RuntimeError(response.status_code, response.text)
         return response.json()
 
-
-def task_request(access_token: str, task_id: int) -> json:
+def task(task_id: int, access_token: str) -> json:
     response = requests.get(
-        url='https://api.modelplace.ai/v3/task', 
+        url=os.path.join(API, 'task'), 
         headers={'Authorization': 'Bearer ' + access_token}, 
         params=(
             ('task_id', task_id),
@@ -38,4 +40,3 @@ def task_request(access_token: str, task_id: int) -> json:
     if response.status_code != 200:
         raise RuntimeError(response.status_code, response.text)
     return response.json()
-    

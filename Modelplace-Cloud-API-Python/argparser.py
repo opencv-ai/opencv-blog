@@ -3,7 +3,7 @@ import argparse
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description='Example of a Python application using the Modelplace.AI Cloud API'
+        description="Modelplace.AI Cloud API Python Application"
     )
     parser.add_argument(
         "-e",
@@ -20,7 +20,7 @@ def parse_args() -> argparse.Namespace:
         required=True,
     )
     parser.add_argument(
-        "-m",
+        "-id",
         "--model-id",
         type=int,
         help="Model ID - the model you want to run on your data. "
@@ -30,17 +30,17 @@ def parse_args() -> argparse.Namespace:
         required=True,
     )
     parser.add_argument(
-        "-i",
-        "--input-file",
+        "-f",
+        "--file",
         type=str, 
         help="Path to the file you want to run a model on",
         required=True,
     )
     parser.add_argument(
         "-s",
-        "--save-folder",
+        "--save-path",
         type=str,
-        default=None,
-        help="Folder for saving the results",
+        default="./results",
+        help="The directory where the results will be saved",
     )
     return parser.parse_args()

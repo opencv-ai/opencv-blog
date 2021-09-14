@@ -4,6 +4,11 @@ import json
 import os
 
 
+def log_error_status(response: requests.models.Response) -> None:
+    logger.error(f'Failed request: {response.url}. '
+                f'Status code: {response.status_code}. '
+                f'Detail: {response.json()["detail"]}')
+
 def save_results(results: json, save_path: str) -> None:
     os.makedirs(save_path, exist_ok=True)
     save_prediction_results(results['result'], save_path, file_name='prediction')
@@ -21,12 +26,3 @@ def save_visualization_results(url: str, save_path: str, file_name: str) -> None
     data = requests.get(url).content
     with open(save_path, 'wb') as f:
         f.write(data)
-
-def log_status(status_code: int, url: str, detail: str) -> None:
-    if not detail:
-        logger.info(f"Successful {url.split('/')[-1]}")
-    else:
-        logger.error(f'Failed request: {url}. '
-                    f'Status code: {status_code}. '
-                    f'Detail: {detail}')
-

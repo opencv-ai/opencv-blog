@@ -4,13 +4,10 @@ import json
 import time
 import os
 
+from utils import log_error_status
+
 
 API = 'https://api.modelplace.ai/v3'
-
-def log_error_status(response: requests.models.Response) -> None:
-    logger.error(f'Failed request: {response.url}. '
-                f'Status code: {response.status_code}. '
-                f'Detail: {response.json()["detail"]}')
 
 def get_access_token(email: str, password:str) -> str:
     response = requests.post(

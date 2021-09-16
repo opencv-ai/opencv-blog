@@ -1,4 +1,4 @@
-This contains the code for **Using OpenCV AI Kit with Modelplace.ai To Create Real-time Reaction Videos**. For more information - visit [OpenCV.AI](https://opencv.ai/post/emotion-recognition).
+This contains the code for **Using OpenCV AI Kit with Modelplace.AI To Create Real-time Reaction Videos**. For more information - visit [Modelplace.AI Blog](https://modelplace.ai/blog/using-opencv-ai-kit-with-modelplace-ai-to-create-real-time-reaction-videos/).
 
 # OAK Emotion Recognition
 

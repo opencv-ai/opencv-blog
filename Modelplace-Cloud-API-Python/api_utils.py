@@ -1,62 +1,40 @@
+from time import sleep
+
 from loguru import logger
-import requests
-import json
-import time
-import os
 
-from utils import log_error_status
+from modelplace_cloud_api import login, process, task
 
 
-API = 'https://api.modelplace.ai/v3'
+def get_access_token(email: str, password: str) -> str:
+    return login(email, password).json().get("access_token", "")
 
-def get_access_token(email: str, password:str) -> str:
-    response = requests.post(
-        url=os.path.join(API, 'login'), 
-        data=json.dumps({ 'email': email, 'password': password })
-    )
-    if response.ok:
-        logger.info('Successful login')
-    else:
-        log_error_status(response)
-        raise RuntimeError('Failed request')
-    return response.json()['access_token']
+
+def get_task(task_id: str, access_token: str) -> dict:
+    return task(task_id, access_token).json()
+
 
 def run_model(model_id: int, input_file: str, access_token: str) -> str:
-    with open(input_file, 'rb') as file:
-        file_name = input_file.split('/')[-1]
-        response = requests.post(
-                url=os.path.join(API, 'process'), 
-                headers={'Authorization': 'Bearer ' + access_token},    
-                params=(('model_id', str(model_id)), ),
-                files={'upload_data': (file_name, file)},
+    return process(model_id, input_file, access_token).json().get("task_id", "")
+
+
+def get_results(
+    task_id: str, access_token: str, interval: int = 5, times: int = 10
+) -> dict:
+    for i in range(times):
+        logger.info(
+            f"Getting the results for Task ID ({task_id}) Step: {i + 1}/{times}"
         )
-        if response.ok:
-            logger.info('Prediction run')
+
+        results = get_task(task_id, access_token)
+
+        if results.get("status") == "finished":
+            logger.info(f"Results are ready. Checking visualization ...")
+            if results.get("visualization_status") == "finished":
+                return results
+            else:
+                logger.info(f"Visualization is not ready yet.")
         else:
-            log_error_status(response)
-            raise RuntimeError('Failed request')
-        return response.json()['task_id']
+            logger.info(f"Results and visualization are not ready yet.")
 
-def get_results(task_id: int, access_token: str, interval: int = 1, times: int = 60) -> json:
-    num_iteration = int(times / interval)
-    for iter in range(num_iteration):
-        prediction_data = get_task(task_id, access_token)
-        logger.info('Prediction computation. Iterating #{}', iter)
-        if prediction_data['status'] == prediction_data['visualization_status'] == 'finished':
-            break
-        time.sleep(interval)
-    return prediction_data
-
-def get_task(task_id: str, access_token: str) -> json:
-    response = requests.get(
-        url=os.path.join(API, 'task'), 
-        headers={'Authorization': 'Bearer ' + access_token}, 
-        params=(
-            ('task_id', task_id),
-            ('visualize', 'true'),
-        )
-    )
-    if not response.ok:
-        log_error_status(response)
-        raise RuntimeError('Failed request')
-    return response.json()
+        logger.info(f"Sleeping {interval}s")
+        sleep(interval)

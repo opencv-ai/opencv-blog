@@ -2,15 +2,10 @@
 ​
 This page contains a Python Application that uses Modelplace.AI Cloud API.  
 
-​
 Modelplace.AI Cloud API is a simple HTTP interface with an API key and an image or video as input and JSON with results and visualization as output. Explore [documentation] and this Python example to integrate AI models into your application or workflow.  
 
-[documentation]:https://modelplace.ai/blog/
-[Modelplace.AI]:https://modelplace.ai
-[Tiny YOLO v4]:https://modelplace.ai/models/32
-[model page]:https://modelplace.ai/models
-
 ## Requirements
+
 1. Install Python 3.7+
 2. Clone this repository
     ```bash
@@ -26,6 +21,7 @@ Modelplace.AI Cloud API is a simple HTTP interface with an API key and an image 
    ```
 
 ## Usage​
+
 ### Quick Start
 ​
 To quickly start using Modelplace.AI Cloud API run the following command in the terminal:
@@ -62,3 +58,8 @@ optional arguments:
 ## Troubleshooting
 ​
 If you get any troubles working with Modelplace Cloud API, please, contact us at modelplace@opencv.ai
+
+[documentation]:https://modelplace.ai/blog/
+[Modelplace.AI]:https://modelplace.ai
+[Tiny YOLO v4]:https://modelplace.ai/models/32
+[model page]:https://modelplace.ai/models

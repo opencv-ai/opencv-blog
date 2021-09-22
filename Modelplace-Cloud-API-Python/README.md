@@ -2,7 +2,7 @@
 ​
 This page contains a Python Application that uses Modelplace.AI Cloud API.  
 
-Modelplace.AI Cloud API is a simple HTTP interface with an API key and an image or video as input and JSON with results and visualization as output. Explore [documentation] and this Python example to integrate AI models into your application or workflow.  
+Modelplace.AI Cloud API is a simple HTTP interface with an API key and an image or video as input and JSON with results and visualization as output. Explore [documentation] and this Python example to integrate AI models into your application or workflow.   
 
 ![](data/demo.gif)
 
@@ -25,19 +25,15 @@ Modelplace.AI Cloud API is a simple HTTP interface with an API key and an image 
 ## Usage​
 
 ### Quick Start
-​
+
 To quickly start using Modelplace.AI Cloud API run the following command in the terminal:
-```bash                  git@github.com:opencv-ai/opencv-blog.git
-
-
-
+```bash
 python3 main.py -e <EMAIL> -p <PASSWORD> -i <MODEL_ID> -f <FILE>
 ```
 where:
 - `EMAIL` - Your [Modelplace.AI] account email
 - `PASSWORD` - Your [Modelplace.AI] account password
-- `MODEL_ID` - Model ID - the model you want to run on your data. Choose a model from the list on the model page - https://modelplace.ai/models and get Model ID from the URI: https://modelplace.ai/models/<MODEL ID>  
-e.g. for Tiny YOLO v4 (https://modelplace.ai/models/32), specify 32 as Model ID.
+- `MODEL_ID` - Model ID - the model you want to run on your data. Choose a model from the list on the model page - https://modelplace.ai/models and get Model ID from the URI: https://modelplace.ai/models/<MODEL ID>. E.g. for Tiny YOLO v4 (https://modelplace.ai/models/32), specify 32 as Model ID.
 - `FILE` - Path to the file you want to run a model on
 ​
 ``` 

@@ -33,8 +33,8 @@ python3 main.py -e <EMAIL> -p <PASSWORD> -i <MODEL_ID> -f <FILE>
 where:
 - `EMAIL` - Your [Modelplace.AI] account email
 - `PASSWORD` - Your [Modelplace.AI] account password
-- `MODEL_ID` - Model ID - the model you want to run on your data. Choose a model from the list on the model page - https://modelplace.ai/models and get Model ID from the URI: https://modelplace.ai/models/<MODEL ID>.  
-E.g. for [Tiny YOLOv4], specify 32 as Model ID.
+- `MODEL_ID` - Model ID - the model you want to run on your data. Choose a model from the list on the [model page] and get Model ID from the URI: `https://modelplace.ai/models/<MODEL ID>`  
+E.g. for [Tiny YOLOv4], specify 32 as Model ID
 - `FILE` - Path to the file you want to run a model on
 ``` 
 usage: main.py [-h] -e EMAIL -p PASSWORD -id MODEL_ID -f FILE [-s SAVE_PATH]
